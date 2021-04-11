@@ -124,7 +124,7 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			   response.setAccessToken(authenticationResult.getAccessToken());
 			   response.setRefreshToken(authenticationResult.getRefreshToken());
 			} else {
-				throw new UnauthorizeExeption(new Error("UNAUTHORIZED", "UNAUTHORIZED"), mapper);
+				throw new UnauthorizeExeption(new Error("UNAUTHORIZED", "NOT LINKED WITH BUSINESS " + request.getBusinessName()), mapper);
 			}
 		   LOGGER.info("finalizando handler");
 	       return response;
