@@ -51,6 +51,7 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 	@Override
 	public SignInResponse execute(SignInRequest request) throws FunctionException {
 		try {
+			LOGGER.debug("INTRALE: Link validation ");
 			SignInResponse response = new SignInResponse();
 			
 			ValidateLinkRequest validateLinkRequest = new ValidateLinkRequest();
@@ -59,11 +60,14 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			validateLinkRequest.setRequestId(request.getRequestId());
 			
 			ValidateLinkResponse validateLinkResponse = validateLinkFunction.execute(validateLinkRequest);
-	    	
+			LOGGER.debug("INTRALE: Link validation finishing");
+			
 			if (validateLinkResponse.getExists()) {
 			    final Map<String, String>authParams = new HashMap();
 			    authParams.put("USERNAME", request.getEmail());  
 			    authParams.put("PASSWORD", request.getPassword());
+			    
+			    LOGGER.debug("INTRALE: Pre Autenticacion ");
 			 
 			   final AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest();
 			       authRequest.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
@@ -74,12 +78,17 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			   AdminInitiateAuthResult result = provider.adminInitiateAuth(authRequest);
 			   AuthenticationResultType authenticationResult = result.getAuthenticationResult();
 			   
+			   LOGGER.debug("INTRALE: Post Autenticacion ");
+			   
 			   if(NEW_PASSWORD_REQUIRED.equals(result.getChallengeName())){
+				   LOGGER.debug("INTRALE: NEW PASSWORD REQUIRED ");
 				   // La autenticacion solicita una nueva password
 				   if (StringUtils.isEmpty(request.getNewPassword())) {
+					   LOGGER.debug("INTRALE: NEW PASSWORD IS EMPTY ");
 					   //return HttpResponse.unauthorized().body(NEW_PASSWORD_REQUIRED);
 					   throw new UnauthorizeExeption(new Error(NEW_PASSWORD_REQUIRED, NEW_PASSWORD_REQUIRED), mapper);
 				   } else {
+					   LOGGER.debug("INTRALE: NEW PASSWORD DETECTED "); 
 					   final Map<String, String> challengeResponses = new HashMap();
 				       challengeResponses.put("USERNAME", request.getEmail());
 				       challengeResponses.put("PASS_WORD", request.getPassword());
@@ -114,6 +123,8 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 				   }
 			   }
 			
+			   LOGGER.debug("INTRALE: LOGIN FINALIZING ");
+			   
 			   response.setIdToken(authenticationResult.getIdToken());
 			   response.setAccessToken(authenticationResult.getAccessToken());
 			   response.setRefreshToken(authenticationResult.getRefreshToken());
