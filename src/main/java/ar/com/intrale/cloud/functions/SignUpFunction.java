@@ -69,7 +69,8 @@ public class SignUpFunction extends Function<SignUpRequest, SignUpResponse, AWSC
 				throw new BadRequestException(new Error(FIELD_USERNAME_ALREADY_EXIST, "Field username already exists"), mapper);
 			}
 		}
-	    response.setEmail(request.getEmail());		
+	    response.setEmail(request.getEmail());	
+	    response.setBusinessName(request.getBusinessName());
 		return response;
 	}
 

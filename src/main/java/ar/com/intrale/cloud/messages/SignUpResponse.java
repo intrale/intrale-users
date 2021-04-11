@@ -6,9 +6,17 @@ import io.micronaut.core.annotation.Introspected;
 @Introspected
 public class SignUpResponse extends Response{
 
+	private String businessName;
 	private String email;
 	private String temporaryPassword;
+
 	
+	public String getBusinessName() {
+		return businessName;
+	}
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
+	}
 	public String getEmail() {
 		return email;
 	}
