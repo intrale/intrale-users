@@ -16,10 +16,13 @@ import ar.com.intrale.cloud.Function;
 import ar.com.intrale.cloud.IntraleFactory;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.functions.DeleteFunction;
+import ar.com.intrale.cloud.functions.PasswordRecoveryFunction;
 import ar.com.intrale.cloud.functions.SignInFunction;
 import ar.com.intrale.cloud.functions.SignUpFunction;
 import ar.com.intrale.cloud.messages.DeleteRequest;
 import ar.com.intrale.cloud.messages.DeleteResponse;
+import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
+import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
 import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
 import ar.com.intrale.cloud.messages.SignInRequest;
@@ -134,6 +137,14 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	User user = readUserResponse.getUsers().iterator().next();
     	assertEquals(DUMMY_VALUE, user.getName());
     	assertEquals(DUMMY_VALUE, user.getFamilyName());
+    	
+    	PasswordRecoveryRequest passwordRecoveryRequest = new PasswordRecoveryRequest();
+    	passwordRecoveryRequest.setRequestId("001");
+    	passwordRecoveryRequest.setBusinessName(DUMMY_VALUE);
+    	passwordRecoveryRequest.setEmail(DUMMY_EMAIL);
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
+    	PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
     	
     	deleteUser();   
         

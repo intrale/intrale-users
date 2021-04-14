@@ -100,20 +100,20 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 				      AdminRespondToAuthChallengeResult responseChallenge = provider.adminRespondToAuthChallenge(requestChallenge);
 				      authenticationResult = responseChallenge.getAuthenticationResult();
 				      
-				      if (!StringUtils.isEmpty(request.getName()) || !StringUtils.isEmpty(request.getFamilyName())) {
-					      AdminUpdateUserAttributesRequest adminUpdateUserAttributesRequest = new AdminUpdateUserAttributesRequest()
-					        .withUserPoolId(config.getAws().getUserPoolId())
-							.withUsername(request.getEmail());
-					      
-					      if (!StringUtils.isEmpty(request.getName())) {
-					    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(NAME).withValue(request.getName()));
-				      	  }
-					      if (!StringUtils.isEmpty(request.getFamilyName())) {
-					    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(FAMILY_NAME).withValue(request.getFamilyName()));
-					      }
-					      
-					      provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
+				      AdminUpdateUserAttributesRequest adminUpdateUserAttributesRequest = new AdminUpdateUserAttributesRequest()
+				        .withUserPoolId(config.getAws().getUserPoolId())
+						.withUsername(request.getEmail());
+				      
+				      if (!StringUtils.isEmpty(request.getName())) {
+				    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(NAME).withValue(request.getName()));
+			      	  }
+				      if (!StringUtils.isEmpty(request.getFamilyName())) {
+				    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(FAMILY_NAME).withValue(request.getFamilyName()));
 				      }
+				      
+				      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName("email_verified").withValue("true"));
+				      
+				      provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
 				      
 				   }
 			   }

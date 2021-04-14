@@ -61,7 +61,7 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 		Iterator<UserType> it = result.getUsers().iterator();
 		while (it.hasNext()) {
 			UserType userType = (UserType) it.next();
-			
+
 			User user = new User();
 			user.setEmail(userType.getUsername());
 			user.setStatus(userType.getUserStatus());
