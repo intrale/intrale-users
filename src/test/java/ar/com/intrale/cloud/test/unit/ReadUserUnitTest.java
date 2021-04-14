@@ -49,10 +49,10 @@ public class ReadUserUnitTest extends ar.com.intrale.cloud.Test {
     	Mockito.reset(provider);
 	}
 
-    @Test
+    /*@Test
     public void testIsRunning() {
     	assertTrue(app.isRunning());
-    }
+    }*/
 
     @Test
     public void testRunner() {
