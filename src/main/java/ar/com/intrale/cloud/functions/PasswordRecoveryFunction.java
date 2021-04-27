@@ -22,11 +22,18 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 	public PasswordRecoveryResponse execute(PasswordRecoveryRequest request) throws FunctionException {
 		PasswordRecoveryResponse response = new PasswordRecoveryResponse(); 
 
+		
+		LOGGER.debug("PRE ForgotPasswordRequest");
+		LOGGER.debug("CLIENT ID:" + config.getAws().getClientId());
+		LOGGER.debug("EMAIL:" + request.getEmail());
+		
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setClientId(config.getAws().getClientId());
 		forgotPasswordRequest.setUsername(request.getEmail());
 
 		ForgotPasswordResult result = provider.forgotPassword(forgotPasswordRequest);
+		
+		LOGGER.debug("RESULT:" + result.getCodeDeliveryDetails().toString());
 
 		response.setEmail(request.getEmail());
 		
