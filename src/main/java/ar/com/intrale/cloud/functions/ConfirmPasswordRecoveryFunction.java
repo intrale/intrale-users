@@ -30,7 +30,7 @@ public class ConfirmPasswordRecoveryFunction extends Function<ConfirmPasswordRec
 
 		ConfirmForgotPasswordResult result = provider.confirmForgotPassword(confirmForgotPasswordRequest);
 
-		response.setUsername(request.getEmail());
+		response.setEmail(request.getEmail());
 		
 		return response;
 	}

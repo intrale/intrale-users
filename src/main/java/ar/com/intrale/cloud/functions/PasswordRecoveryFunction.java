@@ -28,7 +28,7 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 
 		ForgotPasswordResult result = provider.forgotPassword(forgotPasswordRequest);
 
-		response.setUsername(request.getEmail());
+		response.setEmail(request.getEmail());
 		
 		return response;
 	}

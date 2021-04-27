@@ -11,15 +11,17 @@ public class PasswordRecoveryResponse extends Response{
 
     @NonNull
     @NotBlank
-	private String username;
+	private String email;
 
-	@NonNull
-	public String getUsername() {
-		return username;
+    @NonNull
+	public String getEmail() {
+		return email;
 	}
-    
-	public void setUsername(@NonNull String username) {
-		this.username = username;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
+
+
 	
 }

@@ -136,7 +136,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
         ConfirmPasswordRecoveryResponse response  = mapper.readValue(responseEvent.getBody(), ConfirmPasswordRecoveryResponse.class);
         
-        assertEquals(DUMMY_EMAIL, response.getUsername());
+        assertEquals(DUMMY_EMAIL, response.getEmail());
     }
     
 
