@@ -83,7 +83,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
 
         // signin que luego requerira cambio de password
     	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
-    	assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
+    	assertEquals(HttpStatus.UPGRADE_REQUIRED.getCode(), responseEvent.getStatusCode());
     	
     	// Cambio de password durante el signin
     	String newPassword =  credentialGenerator.generate(temporaryPasswordConfig.length);
