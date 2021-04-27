@@ -3,6 +3,9 @@ package ar.com.intrale.cloud.functions;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordRequest;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordResult;
@@ -16,6 +19,8 @@ import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
 @Named(PasswordRecoveryFunction.FUNCTION_NAME)
 public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider> {
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryFunction.class);
+	
 	public static final String FUNCTION_NAME = "passwordRecovery";
 
 	@Override
@@ -23,9 +28,9 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 		PasswordRecoveryResponse response = new PasswordRecoveryResponse(); 
 
 		
-		LOGGER.debug("PRE ForgotPasswordRequest");
-		LOGGER.debug("CLIENT ID:" + config.getAws().getClientId());
-		LOGGER.debug("EMAIL:" + request.getEmail());
+		LOGGER.debug("INTRALE: PRE ForgotPasswordRequest");
+		LOGGER.debug("INTRALE: CLIENT ID:" + config.getAws().getClientId());
+		LOGGER.debug("INTRALE: EMAIL:" + request.getEmail());
 		
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setClientId(config.getAws().getClientId());
@@ -33,7 +38,7 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 
 		ForgotPasswordResult result = provider.forgotPassword(forgotPasswordRequest);
 		
-		LOGGER.debug("RESULT:" + result.getCodeDeliveryDetails().toString());
+		LOGGER.debug("INTRALE: RESULT:" + result.getCodeDeliveryDetails().toString());
 
 		response.setEmail(request.getEmail());
 		
