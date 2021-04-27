@@ -22,6 +22,7 @@ import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.Function;
 import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.NewPasswordRequiredException;
 import ar.com.intrale.cloud.UnauthorizeExeption;
 import ar.com.intrale.cloud.messages.SignInRequest;
 import ar.com.intrale.cloud.messages.SignInResponse;
@@ -81,7 +82,7 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 				   if (StringUtils.isEmpty(request.getNewPassword())) {
 					   LOGGER.debug("INTRALE: NEW PASSWORD IS EMPTY ");
 					   //return HttpResponse.unauthorized().body(NEW_PASSWORD_REQUIRED);
-					   throw new UnauthorizeExeption(new Error(NEW_PASSWORD_REQUIRED, NEW_PASSWORD_REQUIRED), mapper);
+					   throw new NewPasswordRequiredException(new Error(NEW_PASSWORD_REQUIRED, NEW_PASSWORD_REQUIRED), mapper);
 				   } else {
 					   LOGGER.debug("INTRALE: NEW PASSWORD DETECTED "); 
 					   final Map<String, String> challengeResponses = new HashMap();
