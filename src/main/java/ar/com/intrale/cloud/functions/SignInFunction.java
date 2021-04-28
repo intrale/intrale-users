@@ -7,6 +7,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
@@ -33,6 +36,8 @@ import io.micronaut.core.util.StringUtils;
 @Singleton
 @Named(SignInFunction.FUNCTION_NAME)
 public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSCognitoIdentityProvider> {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(SignInFunction.class);
 	
 	public static final String FUNCTION_NAME = "signin";
 

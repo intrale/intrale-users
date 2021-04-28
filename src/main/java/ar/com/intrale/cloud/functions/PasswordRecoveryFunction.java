@@ -3,6 +3,9 @@ package ar.com.intrale.cloud.functions;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordRequest;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordResult;
@@ -16,6 +19,8 @@ import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
 @Named(PasswordRecoveryFunction.FUNCTION_NAME)
 public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryFunction.class);
+	
 	public static final String FUNCTION_NAME = "passwordRecovery";
 
 	@Override
