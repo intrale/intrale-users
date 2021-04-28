@@ -9,7 +9,9 @@
         </encoder>
     </appender>
 
-	<logger name="ar.com.intrale.cloud"  level="DEBUG"/>
+	<logger name="ar.com.intrale.cloud"  level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</logger>
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
