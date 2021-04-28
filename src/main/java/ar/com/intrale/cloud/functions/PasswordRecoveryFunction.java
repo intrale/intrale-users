@@ -28,9 +28,9 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 		PasswordRecoveryResponse response = new PasswordRecoveryResponse(); 
 
 		
-		LOGGER.debug("INTRALE: PRE ForgotPasswordRequest");
-		LOGGER.debug("INTRALE: CLIENT ID:" + config.getAws().getClientId());
-		LOGGER.debug("INTRALE: EMAIL:" + request.getEmail());
+		LOGGER.info("INTRALE: PRE ForgotPasswordRequest");
+		LOGGER.info("INTRALE: CLIENT ID:" + config.getAws().getClientId());
+		LOGGER.info("INTRALE: EMAIL:" + request.getEmail());
 		
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
 		forgotPasswordRequest.setClientId(config.getAws().getClientId());
@@ -38,7 +38,7 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 
 		ForgotPasswordResult result = provider.forgotPassword(forgotPasswordRequest);
 		
-		LOGGER.debug("INTRALE: RESULT:" + result.getCodeDeliveryDetails().toString());
+		LOGGER.info("INTRALE: RESULT:" + result.getCodeDeliveryDetails().toString());
 
 		response.setEmail(request.getEmail());
 		
