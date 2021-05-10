@@ -28,20 +28,20 @@ public class CredentialsGenerator {
 		makers.add(upperCaseLetter);
 		makers.add(lowerCaseLetter);
 		makers.add(numbers);
-		makers.add(specialCharacters);
 	}
 	
 	public String generate(Integer size) {
 		
 		StringBuilder generated = new StringBuilder();
-		
+		makers.add(specialCharacters);
 		while (generated.length()<size) {
 			Collections.shuffle(makers);
 			Iterator<CharacterMaker> it = makers.iterator();
-			while (it.hasNext()) {
+			while ((it.hasNext())&&(generated.length()<size)) {
 				CharacterMaker characterMaker = (CharacterMaker) it.next();
 				generated.append(characterMaker.get());
 			}
+			makers.remove(specialCharacters);
 		}
 		
 		return generated.toString();

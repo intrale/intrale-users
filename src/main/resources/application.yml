@@ -23,4 +23,5 @@ app:
     temporaryPassword:
       length: 8
       returned: false
+      #complex: false
   

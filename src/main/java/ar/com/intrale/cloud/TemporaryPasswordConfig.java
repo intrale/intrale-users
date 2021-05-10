@@ -8,5 +8,6 @@ public class TemporaryPasswordConfig {
 
 	public Integer length;
 	public Boolean returned;
+	//public Boolean complex;
 	
 }

@@ -120,7 +120,8 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         signUpRequest.setBusinessName(DUMMY_VALUE + "_OTHER");
 
     	responseEvent = lambda.execute(makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME));
-        signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
+
+    	signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
         assertEquals(DUMMY_EMAIL.toLowerCase(), signupResponse.getEmail().toLowerCase());
     	
