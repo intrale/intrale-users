@@ -24,17 +24,19 @@ import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
 
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
-import ar.com.intrale.cloud.NewPasswordRequiredException;
-import ar.com.intrale.cloud.UnauthorizeExeption;
+import ar.com.intrale.cloud.exceptions.FunctionException;
+import ar.com.intrale.cloud.exceptions.NewPasswordRequiredException;
+import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
 import ar.com.intrale.cloud.messages.SignInRequest;
 import ar.com.intrale.cloud.messages.SignInResponse;
 import ar.com.intrale.cloud.messages.ValidateLinkRequest;
 import ar.com.intrale.cloud.messages.ValidateLinkResponse;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(SignInFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + SignInFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSCognitoIdentityProvider> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SignInFunction.class);
@@ -72,8 +74,8 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			 
 			   final AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest();
 			       authRequest.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
-			       .withClientId(config.getAws().getClientId())
-			       .withUserPoolId(config.getAws().getUserPoolId())
+			       .withClientId(config.getCognito().getClientId())
+			       .withUserPoolId(config.getCognito().getUserPoolId())
 			       .withAuthParameters(authParams);
 			 
 			   AdminInitiateAuthResult result = provider.adminInitiateAuth(authRequest);
@@ -99,15 +101,15 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 				        final AdminRespondToAuthChallengeRequest requestChallenge = new AdminRespondToAuthChallengeRequest();
 				        requestChallenge.withChallengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
 				          .withChallengeResponses(challengeResponses)
-				          .withClientId(config.getAws().getClientId())
-					      .withUserPoolId(config.getAws().getUserPoolId())
+				          .withClientId(config.getCognito().getClientId())
+					      .withUserPoolId(config.getCognito().getUserPoolId())
 				          .withSession(result.getSession());
 				 
 				      AdminRespondToAuthChallengeResult responseChallenge = provider.adminRespondToAuthChallenge(requestChallenge);
 				      authenticationResult = responseChallenge.getAuthenticationResult();
 				      
 				      AdminUpdateUserAttributesRequest adminUpdateUserAttributesRequest = new AdminUpdateUserAttributesRequest()
-				        .withUserPoolId(config.getAws().getUserPoolId())
+				        .withUserPoolId(config.getCognito().getUserPoolId())
 						.withUsername(request.getEmail());
 				      
 				      if (!StringUtils.isEmpty(request.getName())) {
@@ -138,5 +140,6 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			throw new UnauthorizeExeption(new Error("UNAUTHORIZED", "UNAUTHORIZED"), mapper);
 	   }
 	}
+
 	
 }

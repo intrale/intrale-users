@@ -8,14 +8,17 @@ import com.amazonaws.services.cognitoidp.model.ConfirmForgotPasswordRequest;
 import com.amazonaws.services.cognitoidp.model.ConfirmForgotPasswordResult;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.ConfirmPasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.ConfirmPasswordRecoveryResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(ConfirmPasswordRecoveryFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + ConfirmPasswordRecoveryFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class ConfirmPasswordRecoveryFunction extends Function<ConfirmPasswordRecoveryRequest, ConfirmPasswordRecoveryResponse, AWSCognitoIdentityProvider> {
 
+	
 	public static final String FUNCTION_NAME = "confirmPasswordRecovery";
 
 	@Override
@@ -23,7 +26,7 @@ public class ConfirmPasswordRecoveryFunction extends Function<ConfirmPasswordRec
 		ConfirmPasswordRecoveryResponse response = new ConfirmPasswordRecoveryResponse(); 
 
 		ConfirmForgotPasswordRequest confirmForgotPasswordRequest = new ConfirmForgotPasswordRequest();
-		confirmForgotPasswordRequest.setClientId(config.getAws().getClientId());
+		confirmForgotPasswordRequest.setClientId(config.getCognito().getClientId());
 		confirmForgotPasswordRequest.setUsername(request.getEmail());
 		confirmForgotPasswordRequest.setConfirmationCode(request.getCode());
 		confirmForgotPasswordRequest.setPassword(request.getPassword());

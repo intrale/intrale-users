@@ -106,7 +106,7 @@ public class ReadUserUnitTest extends ar.com.intrale.cloud.Test {
     	
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, Function.READ);
+        headers.put(Lambda.HEADER_FUNCTION, Function.READ);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(readUserRequest));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);

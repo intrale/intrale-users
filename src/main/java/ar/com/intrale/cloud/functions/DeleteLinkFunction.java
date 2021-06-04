@@ -13,12 +13,14 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.DeleteLinkRequest;
 import ar.com.intrale.cloud.messages.DeleteLinkResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(DeleteLinkFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + DeleteLinkFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class DeleteLinkFunction extends Function<DeleteLinkRequest, DeleteLinkResponse, AmazonDynamoDB> {
 
 	public static final String FUNCTION_NAME = "deletelink";

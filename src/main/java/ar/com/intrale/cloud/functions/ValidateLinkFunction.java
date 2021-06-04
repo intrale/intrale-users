@@ -12,12 +12,14 @@ import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.ValidateLinkRequest;
 import ar.com.intrale.cloud.messages.ValidateLinkResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(ValidateLinkFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + ValidateLinkFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class ValidateLinkFunction extends Function<ValidateLinkRequest, ValidateLinkResponse, AmazonDynamoDB> {
 
 	public static final String FUNCTION_NAME = "validatelink";

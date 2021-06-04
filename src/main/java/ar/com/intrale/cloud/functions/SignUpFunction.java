@@ -10,20 +10,22 @@ import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 
-import ar.com.intrale.cloud.BadRequestException;
 import ar.com.intrale.cloud.CredentialsGenerator;
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
-import ar.com.intrale.cloud.UserExistsException;
+import ar.com.intrale.cloud.exceptions.BadRequestException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
+import ar.com.intrale.cloud.exceptions.UserExistsException;
 import ar.com.intrale.cloud.messages.LinkRequest;
 import ar.com.intrale.cloud.messages.LinkResponse;
 import ar.com.intrale.cloud.messages.SignUpRequest;
 import ar.com.intrale.cloud.messages.SignUpResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(SignUpFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + SignUpFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class SignUpFunction extends Function<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider> {
 
 	public static final String FUNCTION_NAME = "signup";
@@ -49,7 +51,7 @@ public class SignUpFunction extends Function<SignUpRequest, SignUpResponse, AWSC
 		String temporaryPassword = credentialGenerator.generate(temporaryPasswordConfig.length);
 		
 		AdminCreateUserRequest cognitoRequest = new AdminCreateUserRequest()
-				.withUserPoolId(config.getAws().getUserPoolId())
+				.withUserPoolId(config.getCognito().getUserPoolId())
 				.withUsername(request.getEmail())
 				.withUserAttributes(new AttributeType().withName(EMAIL).withValue(request.getEmail()))
 				.withTemporaryPassword(temporaryPassword);

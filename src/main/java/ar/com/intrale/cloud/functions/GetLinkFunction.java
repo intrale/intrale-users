@@ -20,14 +20,16 @@ import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.GetLinkRequest;
 import ar.com.intrale.cloud.messages.GetLinkResponse;
 import ar.com.intrale.cloud.messages.Link;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(GetLinkFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + GetLinkFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class GetLinkFunction extends Function<GetLinkRequest, GetLinkResponse, AmazonDynamoDB> {
 
 	public static final String FUNCTION_NAME = "getlink";

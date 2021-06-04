@@ -10,14 +10,16 @@ import com.amazonaws.services.cognitoidp.model.AdminDeleteUserResult;
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.DeleteLinkRequest;
 import ar.com.intrale.cloud.messages.DeleteLinkResponse;
 import ar.com.intrale.cloud.messages.DeleteRequest;
 import ar.com.intrale.cloud.messages.DeleteResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(DeleteFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + DeleteFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class DeleteFunction extends Function<DeleteRequest, DeleteResponse, AWSCognitoIdentityProvider> {
 
 	public static final String FUNCTION_NAME = "delete";
@@ -38,7 +40,7 @@ public class DeleteFunction extends Function<DeleteRequest, DeleteResponse, AWSC
 		if (deleteLinkResponse.getLinksCounts()==0) {
 			try {
 				AdminDeleteUserRequest adminDeleteUserRequest = new AdminDeleteUserRequest();
-				adminDeleteUserRequest.setUserPoolId(config.getAws().getUserPoolId());
+				adminDeleteUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 				adminDeleteUserRequest.setUsername(request.getEmail());
 				AdminDeleteUserResult deleteResult = provider.adminDeleteUser(adminDeleteUserRequest);
 			} catch (UserNotFoundException e) {

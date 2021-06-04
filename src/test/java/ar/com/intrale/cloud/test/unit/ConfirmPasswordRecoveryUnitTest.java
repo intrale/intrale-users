@@ -65,7 +65,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
     public void testRequestNull() throws JsonProcessingException {
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody("");
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
@@ -81,7 +81,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
        
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
@@ -130,7 +130,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);

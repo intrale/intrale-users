@@ -11,12 +11,14 @@ import com.amazonaws.services.cognitoidp.model.ForgotPasswordRequest;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordResult;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(PasswordRecoveryFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + PasswordRecoveryFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryFunction.class);
@@ -29,11 +31,11 @@ public class PasswordRecoveryFunction extends Function<PasswordRecoveryRequest, 
 
 		
 		LOGGER.info("INTRALE: PRE ForgotPasswordRequest");
-		LOGGER.info("INTRALE: CLIENT ID:" + config.getAws().getClientId());
+		LOGGER.info("INTRALE: CLIENT ID:" + config.getCognito().getClientId());
 		LOGGER.info("INTRALE: EMAIL:" + request.getEmail());
 		
 		ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
-		forgotPasswordRequest.setClientId(config.getAws().getClientId());
+		forgotPasswordRequest.setClientId(config.getCognito().getClientId());
 		forgotPasswordRequest.setUsername(request.getEmail());
 
 		ForgotPasswordResult result = provider.forgotPassword(forgotPasswordRequest);

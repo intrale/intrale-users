@@ -17,13 +17,15 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
-import ar.com.intrale.cloud.UserExistsException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
+import ar.com.intrale.cloud.exceptions.UserExistsException;
 import ar.com.intrale.cloud.messages.LinkRequest;
 import ar.com.intrale.cloud.messages.LinkResponse;
+import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(LinkFunction.FUNCTION_NAME)
+@Requires(property = Function.APP_INSTANTIATE + LinkFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
 public class LinkFunction extends Function<LinkRequest, LinkResponse, AmazonDynamoDB> {
 
 	public static final String FUNCTION_NAME = "link";

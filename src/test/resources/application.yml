@@ -4,18 +4,34 @@ app:
   instantiate:
     factory: false
     provider: false
+    read: true
+    signin: true
+    signup: true
+    delete: true
+    deletelink: true
+    passwordRecovery: true
+    confirmPasswordRecovery: true
+    link: true
+    getlink: true
+    validatelink: true
+    validateToken: true
   activity:
     enabled: ${validate.enabled:false}
     maxInactivity: 60000
     fixedDelay: 30s
     initialDelay: 15s
   aws:
-    clientId: 1ve1nokbjnmhk1adiben0a9iao
-    userPoolId: us-east-2_rLbLF8HCb
     region: us-east-2
   cognito:
+    clientId: 1ve1nokbjnmhk1adiben0a9iao
+    userPoolId: us-east-2_rLbLF8HCb
     access: ${cognito.access}
     secret: ${cognito.secret}
+    connectionTimeout: 2000
+    readTimeout: 2000
+    urlPrefix: https://cognito-idp.
+    urlMid: .amazonaws.com/
+    urlSufix: /.well-known/jwks.json
   database:
     access: ${database.access}
     secret: ${database.secret}

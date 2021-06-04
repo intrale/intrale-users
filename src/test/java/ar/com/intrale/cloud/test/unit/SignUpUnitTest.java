@@ -70,7 +70,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
     public void testRequestNull() throws JsonProcessingException {
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody("");
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
@@ -86,7 +86,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
        
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
@@ -133,7 +133,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
@@ -166,7 +166,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);

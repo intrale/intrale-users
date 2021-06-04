@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -20,17 +18,19 @@ import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 
 import ar.com.intrale.cloud.Function;
-import ar.com.intrale.cloud.FunctionException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.GetLinkRequest;
 import ar.com.intrale.cloud.messages.GetLinkResponse;
 import ar.com.intrale.cloud.messages.Link;
 import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
 import ar.com.intrale.cloud.messages.User;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(Function.READ)
+@Requires(property = Function.APP_INSTANTIATE + Function.READ , value = Function.TRUE, defaultValue = Function.TRUE)
 public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse, AWSCognitoIdentityProvider> {
 
 	public static final String EMAIL = "email";
@@ -55,7 +55,7 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 		}
 		
 		ListUsersRequest listUsersRequest = new ListUsersRequest();
-		listUsersRequest.setUserPoolId(config.getAws().getUserPoolId());
+		listUsersRequest.setUserPoolId(config.getCognito().getUserPoolId());
 		
 		ListUsersResult result = provider.listUsers(listUsersRequest);
 		Iterator<UserType> it = result.getUsers().iterator();
@@ -93,7 +93,7 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 			if (match) {
 				response.addUser(user);
 				AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
-				adminListGroupsForUserRequest.setUserPoolId(config.getAws().getUserPoolId());
+				adminListGroupsForUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 				adminListGroupsForUserRequest.setUsername(userType.getUsername());
 				
 				AdminListGroupsForUserResult adminListGroupsForUserResult = provider.adminListGroupsForUser(adminListGroupsForUserRequest);
