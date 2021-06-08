@@ -3,10 +3,14 @@ package ar.com.intrale.cloud.test.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -14,11 +18,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import ar.com.intrale.cloud.CredentialsGenerator;
 import ar.com.intrale.cloud.Function;
 import ar.com.intrale.cloud.IntraleFactory;
+import ar.com.intrale.cloud.Lambda;
+import ar.com.intrale.cloud.Request;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.functions.DeleteFunction;
 import ar.com.intrale.cloud.functions.PasswordRecoveryFunction;
 import ar.com.intrale.cloud.functions.SignInFunction;
 import ar.com.intrale.cloud.functions.SignUpFunction;
+import ar.com.intrale.cloud.functions.ValidateTokenFunction;
 import ar.com.intrale.cloud.messages.DeleteRequest;
 import ar.com.intrale.cloud.messages.DeleteResponse;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
@@ -153,6 +160,14 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
     	
     	assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
+    	/*
+    	Request request = new Request();
+    	request.setBusinessName(DUMMY_VALUE);
+    	request.setRequestId(DUMMY_VALUE);
+    	APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = makeRequestEvent(request, ValidateTokenFunction.FUNCTION_NAME);
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, "Bearer " + signinResponse.getAccessToken());
+    	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
+    	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());*/
 
     }
 
