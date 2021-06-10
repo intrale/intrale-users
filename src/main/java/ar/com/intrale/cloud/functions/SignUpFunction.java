@@ -16,6 +16,7 @@ import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.exceptions.BadRequestException;
+import ar.com.intrale.cloud.exceptions.BusinessNotFoundException;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.UserExistsException;
 import ar.com.intrale.cloud.messages.LinkRequest;
@@ -23,6 +24,7 @@ import ar.com.intrale.cloud.messages.LinkResponse;
 import ar.com.intrale.cloud.messages.SignUpRequest;
 import ar.com.intrale.cloud.messages.SignUpResponse;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(SignUpFunction.FUNCTION_NAME)
@@ -48,6 +50,10 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 	@Override
 	public SignUpResponse execute(SignUpRequest request) throws FunctionException {
 		SignUpResponse response = new SignUpResponse(); 
+		
+		if (StringUtils.isEmpty(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME))) {
+			throw new BusinessNotFoundException(new Error(BUSINESS_NOT_FOUND, BUSINESS_NOT_FOUND), mapper);
+		}
 
 		String temporaryPassword = credentialGenerator.generate(temporaryPasswordConfig.length);
 		

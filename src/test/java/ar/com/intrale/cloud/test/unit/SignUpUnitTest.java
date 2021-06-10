@@ -136,6 +136,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);

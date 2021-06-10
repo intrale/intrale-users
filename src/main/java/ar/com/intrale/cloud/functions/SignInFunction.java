@@ -66,8 +66,9 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 	
 	@Override
 	public SignInResponse execute(SignInRequest request) throws FunctionException {
+		LOGGER.info("INTRALE: LOGIN INITIALIZING ");
 		try {
-			LOGGER.debug("INTRALE: Link validation ");
+			LOGGER.info("INTRALE: Link validation ");
 			SignInResponse response = new SignInResponse();
 			
 			ValidateLinkRequest validateLinkRequest = new ValidateLinkRequest();
@@ -76,14 +77,14 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 			validateLinkRequest.setRequestId(request.getRequestId());
 			
 			ValidateLinkResponse validateLinkResponse = validateLinkFunction.execute(validateLinkRequest);
-			LOGGER.debug("INTRALE: Link validation finishing");
+			LOGGER.info("INTRALE: Link validation finishing");
 			
 			if (validateLinkResponse.getExists()) {
 			    final Map<String, String>authParams = new HashMap();
 			    authParams.put(USERNAME_PARAM, request.getEmail());  
 			    authParams.put(PASSWORD_PARAM, request.getPassword());
 			    
-			    LOGGER.debug("INTRALE: Pre Autenticacion ");
+			    LOGGER.info("INTRALE: Pre Autenticacion ");
 			 
 			   final AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest();
 			       authRequest.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
@@ -94,16 +95,16 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 			   AdminInitiateAuthResult result = provider.adminInitiateAuth(authRequest);
 			   AuthenticationResultType authenticationResult = result.getAuthenticationResult();
 			   
-			   LOGGER.debug("INTRALE: Post Autenticacion ");
+			   LOGGER.info("INTRALE: Post Autenticacion ");
 			   
 			   if(NEW_PASSWORD_REQUIRED.equals(result.getChallengeName())){
-				   LOGGER.debug("INTRALE: NEW PASSWORD REQUIRED ");
+				   LOGGER.info("INTRALE: NEW PASSWORD REQUIRED ");
 				   // La autenticacion solicita una nueva password
 				   if (StringUtils.isEmpty(request.getNewPassword())) {
-					   LOGGER.debug("INTRALE: NEW PASSWORD IS EMPTY ");
+					   LOGGER.info("INTRALE: NEW PASSWORD IS EMPTY ");
 					   throw new NewPasswordRequiredException(new Error(NEW_PASSWORD_REQUIRED, NEW_PASSWORD_REQUIRED), mapper);
 				   } else {
-					   LOGGER.debug("INTRALE: NEW PASSWORD DETECTED "); 
+					   LOGGER.info("INTRALE: NEW PASSWORD DETECTED "); 
 					   final Map<String, String> challengeResponses = new HashMap();
 				       challengeResponses.put(USERNAME_PARAM, request.getEmail());
 				       challengeResponses.put(PASS_WORD_PARAM, request.getPassword());
@@ -138,7 +139,7 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 				   }
 			   }
 			
-			   LOGGER.debug("INTRALE: LOGIN FINALIZING ");
+			   LOGGER.info("INTRALE: LOGIN FINALIZING ");
 			   
 			   response.setIdToken(authenticationResult.getIdToken());
 			   response.setAccessToken(authenticationResult.getAccessToken());
