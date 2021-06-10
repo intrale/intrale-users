@@ -15,9 +15,6 @@ import org.mockito.Mockito;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +37,6 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
 	@Override
     public void beforeEach() {
     	applicationContext.registerSingleton(AWSCognitoIdentityProvider.class, Mockito.mock(AWSCognitoIdentityProvider.class));
-    	applicationContext.registerSingleton(AmazonDynamoDB.class, Mockito.mock(AmazonDynamoDB.class));
     }
 
 	@Override
@@ -115,14 +111,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
     	AWSCognitoIdentityProvider provider = applicationContext.getBean(AWSCognitoIdentityProvider.class);
     	Mockito.when(provider.adminCreateUser(any())).thenReturn(result);
     	
-    	AmazonDynamoDB providerDB = applicationContext.getBean(AmazonDynamoDB.class);
-    	PutItemResult putItemResult = new PutItemResult();
-    	Mockito.when(providerDB.putItem(any())).thenReturn(putItemResult);
-    	QueryResult queryResult = new QueryResult();
-    	Mockito.when(providerDB.query(any())).thenReturn(queryResult);
-    	
     	ConfirmPasswordRecoveryRequest request = new ConfirmPasswordRecoveryRequest();
-    	request.setBusinessName(DUMMY_VALUE);
     	request.setRequestId(DUMMY_VALUE);
         request.setEmail(DUMMY_EMAIL);
         request.setCode(DUMMY_VALUE);
@@ -131,6 +120,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(Lambda.HEADER_FUNCTION, ConfirmPasswordRecoveryFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);

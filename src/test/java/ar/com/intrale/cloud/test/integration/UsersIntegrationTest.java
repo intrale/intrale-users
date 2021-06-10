@@ -3,9 +3,6 @@ package ar.com.intrale.cloud.test.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import ar.com.intrale.cloud.CredentialsGenerator;
-import ar.com.intrale.cloud.Function;
+import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.IntraleFactory;
 import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.Request;
@@ -70,11 +67,11 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	// Registramos un email
     	SignUpRequest signUpRequest = new SignUpRequest();
-    	signUpRequest.setBusinessName(DUMMY_VALUE);
     	signUpRequest.setRequestId(DUMMY_VALUE);
     	signUpRequest.setEmail(DUMMY_EMAIL);
 
-    	responseEvent = lambda.execute(makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME));
+    	APIGatewayProxyRequestEvent requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
+    	responseEvent = lambda.execute(requestEvent);
         SignUpResponse signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
         assertEquals(DUMMY_EMAIL.toLowerCase(), signupResponse.getEmail().toLowerCase());
@@ -82,7 +79,6 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         // Hacemos el primer Signin con el email registrado
         SignInRequest signInRequest = new SignInRequest();
         signInRequest.setRequestId(DUMMY_VALUE);
-        signInRequest.setBusinessName(DUMMY_VALUE);
         signInRequest.setEmail(DUMMY_EMAIL);
         signInRequest.setPassword(signupResponse.getTemporaryPassword());
         signInRequest.setFamilyName(DUMMY_VALUE);
@@ -103,6 +99,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         assertNotNull(signinResponse.getIdToken());
         assertNotNull(signinResponse.getRefreshToken());
         
+        // signin con la nueva password
         signInRequest.setPassword(newPassword);
         
     	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
@@ -112,6 +109,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         assertNotNull(signinResponse.getIdToken());
         assertNotNull(signinResponse.getRefreshToken());
         
+        // signin con password incorrecta
         signInRequest.setPassword(DUMMY_VALUE);
 
        	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
@@ -119,14 +117,15 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         
         // se trata de hacer signin con otro negocio
         signInRequest.setPassword(newPassword);
-        signInRequest.setBusinessName(DUMMY_VALUE + "_OTHER2");
-    	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
+        requestEvent = makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME);
+        requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER2");
+    	responseEvent = lambda.execute(requestEvent);
 
     	assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
     	
-        signUpRequest.setBusinessName(DUMMY_VALUE + "_OTHER");
-
-    	responseEvent = lambda.execute(makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME));
+        requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
+        requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER");
+    	responseEvent = lambda.execute(requestEvent);
 
     	signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
@@ -134,10 +133,9 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	ReadUserRequest readUserRequest = new ReadUserRequest();
     	readUserRequest.setRequestId(DUMMY_VALUE);
-    	readUserRequest.setBusinessName(DUMMY_VALUE);
     	readUserRequest.setEmail(signInRequest.getEmail());
     	
-    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, Function.READ));
+    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
     	ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);   
     
     	assertEquals(1, readUserResponse.getUsers().size());
@@ -148,42 +146,42 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	PasswordRecoveryRequest passwordRecoveryRequest = new PasswordRecoveryRequest();
     	passwordRecoveryRequest.setRequestId("001");
-    	passwordRecoveryRequest.setBusinessName(DUMMY_VALUE);
     	passwordRecoveryRequest.setEmail(DUMMY_EMAIL);
     	
     	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
-    	PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
+    	//PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
     	
     	deleteUser();   
         
-        signInRequest.setBusinessName(DUMMY_VALUE);
     	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
     	
     	assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
-    	/*
+    	
     	Request request = new Request();
-    	request.setBusinessName(DUMMY_VALUE);
     	request.setRequestId(DUMMY_VALUE);
     	APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = makeRequestEvent(request, ValidateTokenFunction.FUNCTION_NAME);
-    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, "Bearer " + signinResponse.getAccessToken());
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
+    	
     	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
-    	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());*/
+    	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
 
     }
 
 	private void deleteUser() throws Exception, JsonProcessingException, JsonMappingException {
 		APIGatewayProxyResponseEvent responseEvent;
 		DeleteRequest deleteRequest = new DeleteRequest();
-    	deleteRequest.setBusinessName(DUMMY_VALUE);
     	deleteRequest.setRequestId(DUMMY_VALUE);
     	deleteRequest.setEmail(DUMMY_EMAIL);
     	
-    	responseEvent = lambda.execute(makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME));
+    	APIGatewayProxyRequestEvent requestEvent = makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME);
+    	requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
+    	responseEvent = lambda.execute(requestEvent);
     	DeleteResponse deleteResponse  = mapper.readValue(responseEvent.getBody(), DeleteResponse.class);    	
 
-    	deleteRequest.setBusinessName(DUMMY_VALUE + "_OTHER");
-
-    	responseEvent = lambda.execute(makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME));
+    	requestEvent = makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME);
+    	requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER");
+    	responseEvent = lambda.execute(requestEvent);
     	deleteResponse  = mapper.readValue(responseEvent.getBody(), DeleteResponse.class);
 	}
 

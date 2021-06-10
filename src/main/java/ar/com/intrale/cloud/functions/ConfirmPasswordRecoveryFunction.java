@@ -7,7 +7,7 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.ConfirmForgotPasswordRequest;
 import com.amazonaws.services.cognitoidp.model.ConfirmForgotPasswordResult;
 
-import ar.com.intrale.cloud.Function;
+import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.ConfirmPasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.ConfirmPasswordRecoveryResponse;
@@ -15,8 +15,8 @@ import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(ConfirmPasswordRecoveryFunction.FUNCTION_NAME)
-@Requires(property = Function.APP_INSTANTIATE + ConfirmPasswordRecoveryFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
-public class ConfirmPasswordRecoveryFunction extends Function<ConfirmPasswordRecoveryRequest, ConfirmPasswordRecoveryResponse, AWSCognitoIdentityProvider> {
+@Requires(property = IntraleFunction.APP_INSTANTIATE + ConfirmPasswordRecoveryFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
+public class ConfirmPasswordRecoveryFunction extends IntraleFunction<ConfirmPasswordRecoveryRequest, ConfirmPasswordRecoveryResponse, AWSCognitoIdentityProvider> {
 
 	
 	public static final String FUNCTION_NAME = "confirmPasswordRecovery";

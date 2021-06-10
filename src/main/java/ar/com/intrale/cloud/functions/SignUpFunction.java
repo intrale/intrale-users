@@ -12,7 +12,8 @@ import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 
 import ar.com.intrale.cloud.CredentialsGenerator;
 import ar.com.intrale.cloud.Error;
-import ar.com.intrale.cloud.Function;
+import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.exceptions.BadRequestException;
 import ar.com.intrale.cloud.exceptions.FunctionException;
@@ -25,8 +26,8 @@ import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(SignUpFunction.FUNCTION_NAME)
-@Requires(property = Function.APP_INSTANTIATE + SignUpFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
-public class SignUpFunction extends Function<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider> {
+@Requires(property = IntraleFunction.APP_INSTANTIATE + SignUpFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
+public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider> {
 
 	public static final String FUNCTION_NAME = "signup";
 	
@@ -58,29 +59,30 @@ public class SignUpFunction extends Function<SignUpRequest, SignUpResponse, AWSC
 		
 		try {
 			AdminCreateUserResult createUserResult = provider.adminCreateUser(cognitoRequest);
-		    
-		    linkEmailWithBusiness(request);
-
-		    if (temporaryPasswordConfig.returned) {
-		    	response.setTemporaryPassword(temporaryPassword);
-		    }
 		} catch (UsernameExistsException e) {
+			// do nothing
+		} finally {
 			try {
 				linkEmailWithBusiness(request);
 			} catch (UserExistsException error) {
 				throw new BadRequestException(new Error(FIELD_USERNAME_ALREADY_EXIST, "Field username already exists"), mapper);
 			}
 		}
+		
+	    if (temporaryPasswordConfig.returned) {
+	    	response.setTemporaryPassword(temporaryPassword);
+	    }
+	    
 	    response.setEmail(request.getEmail());	
-	    response.setBusinessName(request.getBusinessName());
+	    response.setBusinessName(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME));
 		return response;
 	}
 
 	private void linkEmailWithBusiness(SignUpRequest request) throws FunctionException {
 		LinkRequest linkRequest = new LinkRequest();
 		linkRequest.setRequestId(request.getRequestId());
-		linkRequest.setBusinessName(request.getBusinessName());
 		linkRequest.setEmail(request.getEmail());
+		linkRequest.setHeaders(request.getHeaders());
 		
 		LinkResponse linkResponse = linkFunction.execute(linkRequest);
 	}

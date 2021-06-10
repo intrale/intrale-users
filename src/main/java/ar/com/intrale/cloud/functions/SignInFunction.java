@@ -23,7 +23,8 @@ import com.amazonaws.services.cognitoidp.model.ChallengeNameType;
 import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
 
 import ar.com.intrale.cloud.Error;
-import ar.com.intrale.cloud.Function;
+import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.NewPasswordRequiredException;
 import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
@@ -36,9 +37,21 @@ import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(SignInFunction.FUNCTION_NAME)
-@Requires(property = Function.APP_INSTANTIATE + SignInFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
-public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSCognitoIdentityProvider> {
+@Requires(property = IntraleFunction.APP_INSTANTIATE + SignInFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
+public class SignInFunction extends IntraleFunction<SignInRequest, SignInResponse, AWSCognitoIdentityProvider> {
 	
+	private static final String NOT_LINKED_WITH_BUSINESS_MESSAGE = "NOT LINKED WITH BUSINESS ";
+
+	private static final String EMAIL_VERIFIED_ATTRIBUTE = "email_verified";
+
+	private static final String NEW_PASSWORD_PARAM = "NEW_PASSWORD";
+
+	private static final String PASS_WORD_PARAM = "PASS_WORD";
+
+	private static final String PASSWORD_PARAM = "PASSWORD";
+
+	private static final String USERNAME_PARAM = "USERNAME";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(SignInFunction.class);
 	
 	public static final String FUNCTION_NAME = "signin";
@@ -58,7 +71,7 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			SignInResponse response = new SignInResponse();
 			
 			ValidateLinkRequest validateLinkRequest = new ValidateLinkRequest();
-			validateLinkRequest.setBusinessName(request.getBusinessName());
+			validateLinkRequest.setHeaders(request.getHeaders());;
 			validateLinkRequest.setEmail(request.getEmail());
 			validateLinkRequest.setRequestId(request.getRequestId());
 			
@@ -67,8 +80,8 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			
 			if (validateLinkResponse.getExists()) {
 			    final Map<String, String>authParams = new HashMap();
-			    authParams.put("USERNAME", request.getEmail());  
-			    authParams.put("PASSWORD", request.getPassword());
+			    authParams.put(USERNAME_PARAM, request.getEmail());  
+			    authParams.put(PASSWORD_PARAM, request.getPassword());
 			    
 			    LOGGER.debug("INTRALE: Pre Autenticacion ");
 			 
@@ -77,7 +90,7 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			       .withClientId(config.getCognito().getClientId())
 			       .withUserPoolId(config.getCognito().getUserPoolId())
 			       .withAuthParameters(authParams);
-			 
+			       
 			   AdminInitiateAuthResult result = provider.adminInitiateAuth(authRequest);
 			   AuthenticationResultType authenticationResult = result.getAuthenticationResult();
 			   
@@ -88,15 +101,14 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 				   // La autenticacion solicita una nueva password
 				   if (StringUtils.isEmpty(request.getNewPassword())) {
 					   LOGGER.debug("INTRALE: NEW PASSWORD IS EMPTY ");
-					   //return HttpResponse.unauthorized().body(NEW_PASSWORD_REQUIRED);
 					   throw new NewPasswordRequiredException(new Error(NEW_PASSWORD_REQUIRED, NEW_PASSWORD_REQUIRED), mapper);
 				   } else {
 					   LOGGER.debug("INTRALE: NEW PASSWORD DETECTED "); 
 					   final Map<String, String> challengeResponses = new HashMap();
-				       challengeResponses.put("USERNAME", request.getEmail());
-				       challengeResponses.put("PASS_WORD", request.getPassword());
+				       challengeResponses.put(USERNAME_PARAM, request.getEmail());
+				       challengeResponses.put(PASS_WORD_PARAM, request.getPassword());
 				       //add the new password to the params map
-				       challengeResponses.put("NEW_PASSWORD", request.getNewPassword());
+				       challengeResponses.put(NEW_PASSWORD_PARAM, request.getNewPassword());
 				       //populate the challenge response
 				        final AdminRespondToAuthChallengeRequest requestChallenge = new AdminRespondToAuthChallengeRequest();
 				        requestChallenge.withChallengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
@@ -119,7 +131,7 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 				    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(FAMILY_NAME).withValue(request.getFamilyName()));
 				      }
 				      
-				      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName("email_verified").withValue("true"));
+				      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(EMAIL_VERIFIED_ATTRIBUTE).withValue(TRUE));
 				      
 				      provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
 				      
@@ -132,12 +144,12 @@ public class SignInFunction extends Function<SignInRequest, SignInResponse, AWSC
 			   response.setAccessToken(authenticationResult.getAccessToken());
 			   response.setRefreshToken(authenticationResult.getRefreshToken());
 			} else {
-				throw new UnauthorizeExeption(new Error("UNAUTHORIZED", "NOT LINKED WITH BUSINESS " + request.getBusinessName()), mapper);
+				throw new UnauthorizeExeption(new Error(UNAUTHORIZED, NOT_LINKED_WITH_BUSINESS_MESSAGE + request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME)), mapper);
 			}
 		   LOGGER.info("finalizando handler");
 	       return response;
 	   } catch (NotAuthorizedException e) {
-			throw new UnauthorizeExeption(new Error("UNAUTHORIZED", "UNAUTHORIZED"), mapper);
+			throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
 	   }
 	}
 

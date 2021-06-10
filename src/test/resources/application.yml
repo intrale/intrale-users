@@ -32,9 +32,6 @@ app:
     urlPrefix: https://cognito-idp.
     urlMid: .amazonaws.com/
     urlSufix: /.well-known/jwks.json
-  database:
-    access: ${database.access}
-    secret: ${database.secret}
   signup:
     temporaryPassword:
       length: 8

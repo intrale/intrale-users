@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -15,12 +16,10 @@ import org.mockito.Mockito;
 
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
+import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
+import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.UserType;
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +29,6 @@ import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.FunctionExceptionResponse;
 import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.Runner;
-import ar.com.intrale.cloud.functions.LinkFunction;
 import ar.com.intrale.cloud.functions.SignUpFunction;
 import ar.com.intrale.cloud.messages.SignUpRequest;
 import ar.com.intrale.cloud.messages.SignUpResponse;
@@ -45,7 +43,6 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
 	@Override
     public void beforeEach() {
     	applicationContext.registerSingleton(AWSCognitoIdentityProvider.class, Mockito.mock(AWSCognitoIdentityProvider.class));
-    	applicationContext.registerSingleton(AmazonDynamoDB.class, Mockito.mock(AmazonDynamoDB.class));
     }
 
 	@Override
@@ -80,7 +77,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
 
     
     
-   @Test
+    @Test
     public void testValidationRequiredsNotPresent() throws JsonProcessingException {
     	SignUpRequest request = new SignUpRequest();
        
@@ -120,14 +117,19 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
     	AWSCognitoIdentityProvider provider = applicationContext.getBean(AWSCognitoIdentityProvider.class);
     	Mockito.when(provider.adminCreateUser(any())).thenReturn(result);
     	
-    	AmazonDynamoDB providerDB = applicationContext.getBean(AmazonDynamoDB.class);
+    	
+    	AdminGetUserResult adminGetUserResult = Mockito.mock(AdminGetUserResult.class);
+    	Mockito.when(provider.adminGetUser(any())).thenReturn(adminGetUserResult);
+    	Mockito.when(adminGetUserResult.getUserAttributes()).thenReturn(new ArrayList<AttributeType>());
+    	
+    	
+    	/*AmazonDynamoDB providerDB = applicationContext.getBean(AmazonDynamoDB.class);
     	PutItemResult putItemResult = new PutItemResult();
     	Mockito.when(providerDB.putItem(any())).thenReturn(putItemResult);
     	QueryResult queryResult = new QueryResult();
-    	Mockito.when(providerDB.query(any())).thenReturn(queryResult);
+    	Mockito.when(providerDB.query(any())).thenReturn(queryResult);*/
     	
     	SignUpRequest request = new SignUpRequest();
-    	request.setBusinessName(DUMMY_VALUE);
     	request.setRequestId(DUMMY_VALUE);
         request.setEmail(DUMMY_EMAIL);
         
@@ -146,7 +148,8 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
     public void testUsernameExist() throws JsonMappingException, JsonProcessingException {
     	AWSCognitoIdentityProvider provider = applicationContext.getBean(AWSCognitoIdentityProvider.class);
     	Mockito.when(provider.adminCreateUser(any())).thenThrow(UsernameExistsException.class);
-    	AmazonDynamoDB providerDB = applicationContext.getBean(AmazonDynamoDB.class);
+    	
+    	/*AmazonDynamoDB providerDB = applicationContext.getBean(AmazonDynamoDB.class);
     	PutItemResult putItemResult = new PutItemResult();
     	Mockito.when(providerDB.putItem(any())).thenReturn(putItemResult);
     	QueryResult queryResult = new QueryResult();
@@ -156,17 +159,26 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
     	values.put(LinkFunction.EMAIL, new AttributeValue(DUMMY_EMAIL));
     	values.put(LinkFunction.BUSINESS_NAME, new AttributeValue(DUMMY_VALUE));
     	items.add(values);
-    	queryResult.setItems(items);;
-    	Mockito.when(providerDB.query(any())).thenReturn(queryResult);
+    	queryResult.setItems(items);
+    	Mockito.when(providerDB.query(any())).thenReturn(queryResult);*/
+    	
+    	AdminGetUserResult adminGetUserResult = Mockito.mock(AdminGetUserResult.class);
+    	Mockito.when(provider.adminGetUser(any())).thenReturn(adminGetUserResult);
+    	List<AttributeType> attributes = new ArrayList<AttributeType>();
+    	AttributeType attributeType = new AttributeType();
+    	attributeType.setName("profile");
+    	attributeType.setValue(DUMMY_VALUE);
+    	attributes.add(attributeType);
+    	Mockito.when(adminGetUserResult.getUserAttributes()).thenReturn(attributes);
     	
     	SignUpRequest request = new SignUpRequest();
-    	request.setBusinessName(DUMMY_VALUE);
     	request.setRequestId(DUMMY_VALUE);
         request.setEmail(DUMMY_EMAIL);
         
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);

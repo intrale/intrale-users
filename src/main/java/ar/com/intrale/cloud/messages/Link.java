@@ -14,10 +14,6 @@ public class Link {
 	public String getCompleteName() {
 		return businessName + SEPARATOR + email;
 	}
-	
-	public String getBusinessName() {
-		return businessName;
-	}
 
 	public void setBusinessName(String businessName) {
 		this.businessName = businessName;

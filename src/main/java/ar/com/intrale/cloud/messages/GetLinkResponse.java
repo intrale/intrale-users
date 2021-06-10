@@ -15,10 +15,6 @@ public class GetLinkResponse extends Response {
 		return links;
 	}
 
-	public void setLinks(Collection<Link> links) {
-		this.links = links;
-	}
-
 	public void add(Link link) {
 		links.add(link);
 	}

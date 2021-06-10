@@ -5,7 +5,7 @@ import javax.inject.Singleton;
 
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 
-import ar.com.intrale.cloud.Function;
+import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.Request;
 import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.exceptions.FunctionException;
@@ -13,8 +13,8 @@ import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(ValidateTokenFunction.FUNCTION_NAME)
-@Requires(property = Function.APP_INSTANTIATE + ValidateTokenFunction.FUNCTION_NAME , value = Function.TRUE, defaultValue = Function.TRUE)
-public class ValidateTokenFunction extends Function<Request, Response, AWSCognitoIdentityProvider> {
+@Requires(property = IntraleFunction.APP_INSTANTIATE + ValidateTokenFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
+public class ValidateTokenFunction extends IntraleFunction<Request, Response, AWSCognitoIdentityProvider> {
 	
 	public static final String FUNCTION_NAME = "validateToken";
 
@@ -27,6 +27,5 @@ public class ValidateTokenFunction extends Function<Request, Response, AWSCognit
 	protected boolean isSecurityEnabled() {
 		return Boolean.TRUE;
 	}
-	
 	
 }

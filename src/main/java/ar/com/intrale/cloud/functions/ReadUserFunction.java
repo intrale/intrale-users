@@ -17,7 +17,8 @@ import com.amazonaws.services.cognitoidp.model.ListUsersRequest;
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 
-import ar.com.intrale.cloud.Function;
+import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.GetLinkRequest;
 import ar.com.intrale.cloud.messages.GetLinkResponse;
@@ -29,9 +30,9 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 @Singleton
-@Named(Function.READ)
-@Requires(property = Function.APP_INSTANTIATE + Function.READ , value = Function.TRUE, defaultValue = Function.TRUE)
-public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse, AWSCognitoIdentityProvider> {
+@Named(IntraleFunction.READ)
+@Requires(property = IntraleFunction.APP_INSTANTIATE + IntraleFunction.READ , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
+public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserResponse, AWSCognitoIdentityProvider> {
 
 	public static final String EMAIL = "email";
 	public static final String FAMILY_NAME = "family_name";
@@ -45,7 +46,8 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 		
 		if (links==null) {
 			GetLinkRequest getLinkRequest = new GetLinkRequest();
-			getLinkRequest.setRequestId("1");
+			getLinkRequest.setRequestId(request.getRequestId());
+			getLinkRequest.setEmail(request.getEmail());
 			
 			GetLinkFunction getLinkFunction = applicationContext.getBean(GetLinkFunction.class);
 			GetLinkResponse getLinkResponse = getLinkFunction.execute(getLinkRequest);
@@ -83,7 +85,7 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 			Boolean match = Boolean.TRUE;
 			
 			// Filtro por negocio
-			match = links.containsKey(request.getBusinessName() + Link.SEPARATOR + user.getEmail() );
+			match = links.containsKey(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME) + Link.SEPARATOR + user.getEmail() );
 			
 			// Filtro por email / nombre de usuario
 			if (match  && !StringUtils.isEmpty(request.getEmail())) {
@@ -92,7 +94,8 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 			
 			if (match) {
 				response.addUser(user);
-				AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
+				//TODO: Resta gestionar los grupos como perfiles de usuario
+				/*AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
 				adminListGroupsForUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 				adminListGroupsForUserRequest.setUsername(userType.getUsername());
 				
@@ -103,7 +106,7 @@ public class ReadUserFunction extends Function<ReadUserRequest, ReadUserResponse
 						GroupType groupType = (GroupType) itGroups.next();
 						user.addGroup(groupType.getGroupName(), groupType.getDescription());
 					}
-				}
+				}*/
 			}
 			
 			
