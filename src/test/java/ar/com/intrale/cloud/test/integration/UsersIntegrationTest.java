@@ -133,11 +133,17 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	ReadUserRequest readUserRequest = new ReadUserRequest();
     	readUserRequest.setRequestId(DUMMY_VALUE);
-    	readUserRequest.setEmail(signInRequest.getEmail());
     	
     	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
     	ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);   
     
+    	assertEquals(1, readUserResponse.getUsers().size());
+    	
+    	readUserRequest.setEmail(signInRequest.getEmail());
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
+    	readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);
+    	
     	assertEquals(1, readUserResponse.getUsers().size());
     	
     	User user = readUserResponse.getUsers().iterator().next();

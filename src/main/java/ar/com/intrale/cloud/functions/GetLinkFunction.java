@@ -3,6 +3,7 @@ package ar.com.intrale.cloud.functions;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -11,6 +12,9 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminGetUserRequest;
 import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
+import com.amazonaws.services.cognitoidp.model.ListUsersRequest;
+import com.amazonaws.services.cognitoidp.model.ListUsersResult;
+import com.amazonaws.services.cognitoidp.model.UserType;
 
 import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.exceptions.FunctionException;
@@ -33,9 +37,35 @@ public class GetLinkFunction extends IntraleFunction<GetLinkRequest, GetLinkResp
 	public GetLinkResponse execute(GetLinkRequest request) throws FunctionException {
 		GetLinkResponse response = new GetLinkResponse(); 
 		
+		String username = request.getEmail();
+		
+		if (StringUtils.isEmpty(username)) {
+			ListUsersRequest listUsersRequest = new ListUsersRequest();
+			listUsersRequest.setUserPoolId(config.getCognito().getUserPoolId());
+			ListUsersResult result = provider.listUsers(listUsersRequest); 
+			
+			List<UserType> users = result.getUsers();
+			if (users!=null) {
+				users.forEach(new Consumer<UserType>() {
+	
+					@Override
+					public void accept(UserType user) {
+						generateLinks(response, user.getUsername());
+					}
+				});
+				
+			}
+		} else {
+			generateLinks(response, username);
+		}
+		
+		return response;
+	}
+
+	protected void generateLinks(GetLinkResponse response, String username) {
 		AdminGetUserRequest adminGetUserRequest = new AdminGetUserRequest();
 		adminGetUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
-		adminGetUserRequest.setUsername(request.getEmail());
+		adminGetUserRequest.setUsername(username);
 		AdminGetUserResult adminGetUserResult =  provider.adminGetUser(adminGetUserRequest);
 		
 		if (adminGetUserRequest!=null) {
@@ -53,7 +83,7 @@ public class GetLinkFunction extends IntraleFunction<GetLinkRequest, GetLinkResp
 								String businessName = (String) itBusinessNamesRegistered.next();
 								Link link = new Link();
 								link.setBusinessName(businessName);
-								link.setEmail(request.getEmail());
+								link.setEmail(username);
 								response.add(link);
 								
 							}
@@ -62,8 +92,6 @@ public class GetLinkFunction extends IntraleFunction<GetLinkRequest, GetLinkResp
 				}
 			}
 		}
-		
-		return response;
 	}
 
 }
