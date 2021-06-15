@@ -2,6 +2,7 @@ package ar.com.intrale.cloud.test.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ import ar.com.intrale.cloud.Request;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.functions.DeleteFunction;
 import ar.com.intrale.cloud.functions.PasswordRecoveryFunction;
+import ar.com.intrale.cloud.functions.ReadGroupFunction;
 import ar.com.intrale.cloud.functions.SignInFunction;
 import ar.com.intrale.cloud.functions.SignUpFunction;
 import ar.com.intrale.cloud.functions.ValidateTokenFunction;
@@ -27,6 +29,7 @@ import ar.com.intrale.cloud.messages.DeleteRequest;
 import ar.com.intrale.cloud.messages.DeleteResponse;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
+import ar.com.intrale.cloud.messages.ReadGroupResponse;
 import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
 import ar.com.intrale.cloud.messages.SignInRequest;
@@ -171,6 +174,15 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
+    	
+    	apiGatewayProxyRequestEvent = makeRequestEvent(request, ReadGroupFunction.FUNCTION_NAME);
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
+    	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
+    	ReadGroupResponse readGroupResponse = mapper.readValue(responseEvent.getBody(), ReadGroupResponse.class);
+
+    	assertTrue(readGroupResponse.getGroups().size()>0);
+    	
 
     }
 
