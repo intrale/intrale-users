@@ -34,26 +34,10 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 	public static final String FAMILY_NAME = "family_name";
 	public static final String NAME = "name";
 	
-	/*private Map<String, String> links;
-	
-	@Inject
-	private GetLinkFunction getLinkFunction;*/
-	
 	@Override
 	public ReadUserResponse execute(ReadUserRequest request) throws FunctionException {
 		ReadUserResponse response = new ReadUserResponse();
-		
-		/*if (links==null) {
-			GetLinkRequest getLinkRequest = new GetLinkRequest();
-			getLinkRequest.setRequestId(request.getRequestId());
-			getLinkRequest.setEmail(request.getEmail());
-			
-			GetLinkResponse getLinkResponse = getLinkFunction.execute(getLinkRequest);
-			Collection<Link> linksResponse = getLinkResponse.getLinks();
-			
-			links = linksResponse.stream().collect(Collectors.toMap(Link::getCompleteName, Link::getEmail));					
-		}*/
-		
+
 		ListUsersRequest listUsersRequest = new ListUsersRequest();
 		listUsersRequest.setUserPoolId(config.getCognito().getUserPoolId());
 		
@@ -91,21 +75,6 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 				
 				response.addUser(user);
 			}
-			
-			/*// Filtrar antes de seguir
-			Boolean match = Boolean.TRUE;
-			
-			// Filtro por negocio
-			match = links.containsKey(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME) + Link.SEPARATOR + user.getEmail() );
-			
-			// Filtro por email / nombre de usuario
-			if (match  && !StringUtils.isEmpty(request.getEmail())) {
-				match = user.getEmail().contains(request.getEmail());
-			} 
-			
-			if (match) {
-				response.addUser(user);
-			}*/
 			
 		}	
 		

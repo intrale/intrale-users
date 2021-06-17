@@ -43,9 +43,6 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 	@Inject
 	private CredentialsGenerator credentialGenerator;
 	
-	/*@Inject
-	private LinkFunction linkFunction;*/
-	
 	@Override
 	public SignUpResponse execute(SignUpRequest request) throws FunctionException {
 		SignUpResponse response = new SignUpResponse(); 
@@ -83,16 +80,7 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 		     
 		     provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
 			
-			
-			
-			
-		} /*finally {
-			try {
-				linkEmailWithBusiness(request);
-			} catch (UserExistsException error) {
-				throw new BadRequestException(new Error(FIELD_USERNAME_ALREADY_EXIST, "Field username already exists"), mapper);
-			}
-		}*/
+		} 
 		
 	    if (temporaryPasswordConfig.returned) {
 	    	response.setTemporaryPassword(temporaryPassword);
@@ -102,15 +90,5 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 	    response.setBusinessName(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME));
 		return response;
 	}
-
-	/*private void linkEmailWithBusiness(SignUpRequest request) throws FunctionException {
-		LinkRequest linkRequest = new LinkRequest();
-		linkRequest.setRequestId(request.getRequestId());
-		linkRequest.setEmail(request.getEmail());
-		linkRequest.setHeaders(request.getHeaders());
-		
-		LinkResponse linkResponse = linkFunction.execute(linkRequest);
-	}*/
-
 
 }

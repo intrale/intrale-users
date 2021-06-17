@@ -5,7 +5,6 @@ import javax.inject.Singleton;
 
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.AdminDeleteUserRequest;
-import com.amazonaws.services.cognitoidp.model.AdminDeleteUserResult;
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
 import ar.com.intrale.cloud.IntraleFunction;
@@ -27,7 +26,7 @@ public class DeleteFunction extends IntraleFunction<DeleteRequest, Response, AWS
 			AdminDeleteUserRequest adminDeleteUserRequest = new AdminDeleteUserRequest();
 			adminDeleteUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 			adminDeleteUserRequest.setUsername(request.getEmail());
-			AdminDeleteUserResult deleteResult = provider.adminDeleteUser(adminDeleteUserRequest);
+			provider.adminDeleteUser(adminDeleteUserRequest);
 		} catch (UserNotFoundException e) {
 			// do nothing
 		}
