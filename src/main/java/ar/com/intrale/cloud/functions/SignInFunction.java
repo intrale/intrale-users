@@ -2,8 +2,8 @@ package ar.com.intrale.cloud.functions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
+import com.amazonaws.services.cognitoidp.model.AdminGetUserRequest;
+import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.amazonaws.services.cognitoidp.model.AdminRespondToAuthChallengeRequest;
@@ -21,6 +23,7 @@ import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.amazonaws.services.cognitoidp.model.ChallengeNameType;
 import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
+import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.IntraleFunction;
@@ -30,8 +33,6 @@ import ar.com.intrale.cloud.exceptions.NewPasswordRequiredException;
 import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
 import ar.com.intrale.cloud.messages.SignInRequest;
 import ar.com.intrale.cloud.messages.SignInResponse;
-import ar.com.intrale.cloud.messages.ValidateLinkRequest;
-import ar.com.intrale.cloud.messages.ValidateLinkResponse;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
@@ -61,25 +62,28 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 	public static final String FAMILY_NAME = "family_name";
 	public static final String NAME = "name";
 	
-	@Inject
-	private ValidateLinkFunction validateLinkFunction;
-	
 	@Override
 	public SignInResponse execute(SignInRequest request) throws FunctionException {
 		LOGGER.info("INTRALE: LOGIN INITIALIZING ");
+		SignInResponse response = new SignInResponse();
 		try {
-			LOGGER.info("INTRALE: Link validation ");
-			SignInResponse response = new SignInResponse();
+			String businessName = request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME);
+		
+			AdminGetUserResult adminGetUserResult = null;
+			try {
+				AdminGetUserRequest adminGetUserRequest = new AdminGetUserRequest();
+				adminGetUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
+				adminGetUserRequest.setUsername(request.getEmail());
+				adminGetUserResult =  provider.adminGetUser(adminGetUserRequest);
+			} catch (UserNotFoundException e) {
+				throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
+			}
 			
-			ValidateLinkRequest validateLinkRequest = new ValidateLinkRequest();
-			validateLinkRequest.setHeaders(request.getHeaders());;
-			validateLinkRequest.setEmail(request.getEmail());
-			validateLinkRequest.setRequestId(request.getRequestId());
+			Map<String, String> attributes = adminGetUserResult.getUserAttributes().stream()
+				      .collect(Collectors.toMap(AttributeType::getName, AttributeType::getValue));
+			String businessAttributeValue = attributes.get(BUSINESS_ATTRIBUTE);
 			
-			ValidateLinkResponse validateLinkResponse = validateLinkFunction.execute(validateLinkRequest);
-			LOGGER.info("INTRALE: Link validation finishing");
-			
-			if (validateLinkResponse.getExists()) {
+			if (businessAttributeValue.contains(businessName)) {
 			    final Map<String, String>authParams = new HashMap();
 			    authParams.put(USERNAME_PARAM, request.getEmail());  
 			    authParams.put(PASSWORD_PARAM, request.getPassword());

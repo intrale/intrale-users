@@ -31,7 +31,7 @@ import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
 import io.micronaut.test.annotation.MicronautTest;
 
-@MicronautTest
+//@MicronautTest
 public class ReadUserUnitTest extends ar.com.intrale.cloud.Test {
 
 	@Override
@@ -50,7 +50,7 @@ public class ReadUserUnitTest extends ar.com.intrale.cloud.Test {
     	assertTrue(app.isRunning());
     }*/
 
-    @Test
+  /*  @Test
     public void testRunner() {
     	Runner runner = new Runner();
     	runner.main(null);
@@ -100,7 +100,7 @@ public class ReadUserUnitTest extends ar.com.intrale.cloud.Test {
     	
         ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);
         assertEquals(200, readUserResponse.getStatusCode());
-    }
+    }*/
     
 
 }

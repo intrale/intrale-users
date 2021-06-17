@@ -1,6 +1,5 @@
 package ar.com.intrale.cloud.functions;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,9 +19,6 @@ import com.amazonaws.services.cognitoidp.model.UserType;
 import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.exceptions.FunctionException;
-import ar.com.intrale.cloud.messages.GetLinkRequest;
-import ar.com.intrale.cloud.messages.GetLinkResponse;
-import ar.com.intrale.cloud.messages.Link;
 import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
 import ar.com.intrale.cloud.messages.User;
@@ -38,23 +34,25 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 	public static final String FAMILY_NAME = "family_name";
 	public static final String NAME = "name";
 	
-	private Map<String, String> links;
+	/*private Map<String, String> links;
+	
+	@Inject
+	private GetLinkFunction getLinkFunction;*/
 	
 	@Override
 	public ReadUserResponse execute(ReadUserRequest request) throws FunctionException {
 		ReadUserResponse response = new ReadUserResponse();
 		
-		if (links==null) {
+		/*if (links==null) {
 			GetLinkRequest getLinkRequest = new GetLinkRequest();
 			getLinkRequest.setRequestId(request.getRequestId());
 			getLinkRequest.setEmail(request.getEmail());
 			
-			GetLinkFunction getLinkFunction = applicationContext.getBean(GetLinkFunction.class);
 			GetLinkResponse getLinkResponse = getLinkFunction.execute(getLinkRequest);
 			Collection<Link> linksResponse = getLinkResponse.getLinks();
 			
 			links = linksResponse.stream().collect(Collectors.toMap(Link::getCompleteName, Link::getEmail));					
-		}
+		}*/
 		
 		ListUsersRequest listUsersRequest = new ListUsersRequest();
 		listUsersRequest.setUserPoolId(config.getCognito().getUserPoolId());
@@ -68,32 +66,16 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 			user.setEmail(userType.getUsername());
 			user.setStatus(userType.getUserStatus());
 			
-			if (userType.getAttributes()!=null) {
-				Iterator<AttributeType> itAttributes = userType.getAttributes().iterator();
-				while (itAttributes.hasNext()) {
-					AttributeType attributeType = (AttributeType) itAttributes.next();
-					if (NAME.equals(attributeType.getName())) {
-						user.setName(attributeType.getValue());
-					}
-					if (FAMILY_NAME.equals(attributeType.getName())) {
-						user.setFamilyName(attributeType.getValue());
-					}
-				}
-			}
 			
-			// Filtrar antes de seguir
-			Boolean match = Boolean.TRUE;
+			Map<String, String> attributes = userType.getAttributes().stream()
+				      .collect(Collectors.toMap(AttributeType::getName, AttributeType::getValue));
 			
-			// Filtro por negocio
-			match = links.containsKey(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME) + Link.SEPARATOR + user.getEmail() );
-			
-			// Filtro por email / nombre de usuario
-			if (match  && !StringUtils.isEmpty(request.getEmail())) {
-				match = user.getEmail().contains(request.getEmail());
-			} 
-			
-			if (match) {
-				response.addUser(user);
+			String businessNames = attributes.get(BUSINESS_ATTRIBUTE);
+			if ((businessNames.contains(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME))) && 
+					((StringUtils.isEmpty(request.getEmail())) || user.getEmail().contains(request.getEmail()))) {
+				user.setName(attributes.get(NAME));
+				user.setFamilyName(attributes.get(FAMILY_NAME));
+				
 				AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
 				adminListGroupsForUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 				adminListGroupsForUserRequest.setUsername(userType.getUsername());
@@ -106,7 +88,24 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 						user.addGroup(groupType.getGroupName(), groupType.getDescription());
 					}
 				}
+				
+				response.addUser(user);
 			}
+			
+			/*// Filtrar antes de seguir
+			Boolean match = Boolean.TRUE;
+			
+			// Filtro por negocio
+			match = links.containsKey(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME) + Link.SEPARATOR + user.getEmail() );
+			
+			// Filtro por email / nombre de usuario
+			if (match  && !StringUtils.isEmpty(request.getEmail())) {
+				match = user.getEmail().contains(request.getEmail());
+			} 
+			
+			if (match) {
+				response.addUser(user);
+			}*/
 			
 		}	
 		
