@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
@@ -14,8 +19,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import ar.com.intrale.cloud.CredentialsGenerator;
-import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.IntraleFactory;
+import ar.com.intrale.cloud.IntraleFunction;
 import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.Request;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
@@ -27,8 +32,8 @@ import ar.com.intrale.cloud.functions.SignUpFunction;
 import ar.com.intrale.cloud.functions.ValidateTokenFunction;
 import ar.com.intrale.cloud.messages.DeleteRequest;
 import ar.com.intrale.cloud.messages.DeleteResponse;
+import ar.com.intrale.cloud.messages.Group;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
-import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
 import ar.com.intrale.cloud.messages.ReadGroupResponse;
 import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
@@ -36,6 +41,7 @@ import ar.com.intrale.cloud.messages.SignInRequest;
 import ar.com.intrale.cloud.messages.SignInResponse;
 import ar.com.intrale.cloud.messages.SignUpRequest;
 import ar.com.intrale.cloud.messages.SignUpResponse;
+import ar.com.intrale.cloud.messages.UpdateUserRequest;
 import ar.com.intrale.cloud.messages.User;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.http.HttpStatus;
@@ -74,6 +80,12 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	signUpRequest.setEmail(DUMMY_EMAIL);
 
     	APIGatewayProxyRequestEvent requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
+		Map<String, String> headers = requestEvent.getHeaders();
+		headers.remove(Lambda.HEADER_BUSINESS_NAME);
+		responseEvent = lambda.execute(requestEvent);
+		assertEquals(HttpStatus.NOT_FOUND.getCode(), responseEvent.getStatusCode());
+		
+		requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
     	responseEvent = lambda.execute(requestEvent);
         SignUpResponse signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
@@ -160,6 +172,37 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
     	//PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
     	
+    	APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = makeRequestEvent(new Request(), ReadGroupFunction.FUNCTION_NAME);
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
+    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
+    	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
+    	ReadGroupResponse readGroupResponse = mapper.readValue(responseEvent.getBody(), ReadGroupResponse.class);
+
+    	assertTrue(!readGroupResponse.getGroups().isEmpty());
+
+    	
+    	List<String> groups = new ArrayList<String>();
+    	readGroupResponse.getGroups().forEach(new Consumer<Group>() {
+
+			@Override
+			public void accept(Group group) {
+				groups.add(group.getName());
+			}
+		});
+    	
+    	UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+    	updateUserRequest.setRequestId(DUMMY_VALUE);
+    	updateUserRequest.setEmail(DUMMY_EMAIL);
+    	updateUserRequest.setGroups(groups);
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
+    	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
+    	
+    	updateUserRequest.setGroups(groups.subList(1, groups.size()));
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
+    	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
+    	
     	deleteUser();   
         
     	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
@@ -168,22 +211,13 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	Request request = new Request();
     	request.setRequestId(DUMMY_VALUE);
-    	APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = makeRequestEvent(request, ValidateTokenFunction.FUNCTION_NAME);
+    	apiGatewayProxyRequestEvent = makeRequestEvent(request, ValidateTokenFunction.FUNCTION_NAME);
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
     	
     	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
     	
-    	apiGatewayProxyRequestEvent = makeRequestEvent(request, ReadGroupFunction.FUNCTION_NAME);
-    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
-    	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
-    	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
-    	ReadGroupResponse readGroupResponse = mapper.readValue(responseEvent.getBody(), ReadGroupResponse.class);
-
-    	assertTrue(readGroupResponse.getGroups().size()>0);
-    	
-
     }
 
 	private void deleteUser() throws Exception, JsonProcessingException, JsonMappingException {
