@@ -9,7 +9,10 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
+import com.amazonaws.services.cognitoidp.model.AdminListGroupsForUserRequest;
+import com.amazonaws.services.cognitoidp.model.AdminListGroupsForUserResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
+import com.amazonaws.services.cognitoidp.model.GroupType;
 import com.amazonaws.services.cognitoidp.model.ListUsersRequest;
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
@@ -91,8 +94,7 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 			
 			if (match) {
 				response.addUser(user);
-				//TODO: Resta gestionar los grupos como perfiles de usuario
-				/*AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
+				AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
 				adminListGroupsForUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 				adminListGroupsForUserRequest.setUsername(userType.getUsername());
 				
@@ -103,9 +105,8 @@ public class ReadUserFunction extends IntraleFunction<ReadUserRequest, ReadUserR
 						GroupType groupType = (GroupType) itGroups.next();
 						user.addGroup(groupType.getGroupName(), groupType.getDescription());
 					}
-				}*/
+				}
 			}
-			
 			
 		}	
 		

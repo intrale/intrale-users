@@ -9,8 +9,7 @@ public class User {
 	private String name;
 	private String familyName;
 	private String status;
-	//TODO: Resta gestionar los grupos como perfiles de usuario
-	//private Collection<Group> groups = new ArrayList<Group>();
+	private Collection<Group> groups = new ArrayList<Group>();
 	
 	public String getEmail() {
 		return email;
@@ -28,19 +27,20 @@ public class User {
 		this.familyName = familyName;
 	}
 
-	/*public void addGroup(String name, String description) {
+	public void addGroup(String name, String description) {
 		Group group = new Group();
 		group.setName(name);
 		group.setDescription(description);
 		groups.add(group);
-	}*/
+	}
 	
-	/*public Collection<Group> getGroups() {
+	public Collection<Group> getGroups() {
 		return groups;
 	}
 	public void setGroups(Collection<Group> groups) {
 		this.groups = groups;
-	}*/
+	}
+	
 	public String getStatus() {
 		return status;
 	}

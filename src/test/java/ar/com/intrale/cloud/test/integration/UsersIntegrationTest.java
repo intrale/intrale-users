@@ -145,33 +145,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
         assertEquals(DUMMY_EMAIL.toLowerCase(), signupResponse.getEmail().toLowerCase());
-    	
-    	ReadUserRequest readUserRequest = new ReadUserRequest();
-    	readUserRequest.setRequestId(DUMMY_VALUE);
-    	
-    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
-    	ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);   
-    
-    	assertEquals(1, readUserResponse.getUsers().size());
-    	
-    	readUserRequest.setEmail(signInRequest.getEmail());
-    	
-    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
-    	readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);
-    	
-    	assertEquals(1, readUserResponse.getUsers().size());
-    	
-    	User user = readUserResponse.getUsers().iterator().next();
-    	assertEquals(DUMMY_VALUE, user.getName());
-    	assertEquals(DUMMY_VALUE, user.getFamilyName());
-    	
-    	PasswordRecoveryRequest passwordRecoveryRequest = new PasswordRecoveryRequest();
-    	passwordRecoveryRequest.setRequestId("001");
-    	passwordRecoveryRequest.setEmail(DUMMY_EMAIL);
-    	
-    	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
-    	//PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
-    	
+        
     	APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = makeRequestEvent(new Request(), ReadGroupFunction.FUNCTION_NAME);
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
@@ -202,6 +176,33 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	responseEvent = lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
+        
+    	
+    	ReadUserRequest readUserRequest = new ReadUserRequest();
+    	readUserRequest.setRequestId(DUMMY_VALUE);
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
+    	ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);   
+    
+    	assertEquals(1, readUserResponse.getUsers().size());
+    	
+    	readUserRequest.setEmail(signInRequest.getEmail());
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
+    	readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);
+    	
+    	assertEquals(1, readUserResponse.getUsers().size());
+    	
+    	User user = readUserResponse.getUsers().iterator().next();
+    	assertEquals(DUMMY_VALUE, user.getName());
+    	assertEquals(DUMMY_VALUE, user.getFamilyName());
+    	
+    	PasswordRecoveryRequest passwordRecoveryRequest = new PasswordRecoveryRequest();
+    	passwordRecoveryRequest.setRequestId("001");
+    	passwordRecoveryRequest.setEmail(DUMMY_EMAIL);
+    	
+    	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
+    	//PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
     	
     	deleteUser();   
         
