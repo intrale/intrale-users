@@ -5,11 +5,8 @@ import javax.validation.constraints.NotBlank;
 
 import ar.com.intrale.cloud.Request;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.micronaut.core.annotation.Introspected;
 
-@Introspected
-public class DeleteRequest extends Request{
-
+public class DeleteRequest extends Request {
     @NonNull
     @NotBlank
     @Email
@@ -25,5 +22,4 @@ public class DeleteRequest extends Request{
 	public void setEmail(@NonNull String email) {
 		this.email = email;
 	}
-
 }

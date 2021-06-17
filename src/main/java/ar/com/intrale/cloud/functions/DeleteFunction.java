@@ -10,18 +10,17 @@ import com.amazonaws.services.cognitoidp.model.AdminDeleteUserResult;
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
 import ar.com.intrale.cloud.IntraleFunction;
-import ar.com.intrale.cloud.Lambda;
+import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.DeleteLinkRequest;
 import ar.com.intrale.cloud.messages.DeleteLinkResponse;
 import ar.com.intrale.cloud.messages.DeleteRequest;
-import ar.com.intrale.cloud.messages.DeleteResponse;
 import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(DeleteFunction.FUNCTION_NAME)
 @Requires(property = IntraleFunction.APP_INSTANTIATE + DeleteFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
-public class DeleteFunction extends IntraleFunction<DeleteRequest, DeleteResponse, AWSCognitoIdentityProvider> {
+public class DeleteFunction extends IntraleFunction<DeleteRequest, Response, AWSCognitoIdentityProvider> {
 
 	public static final String FUNCTION_NAME = "delete";
 	
@@ -29,9 +28,7 @@ public class DeleteFunction extends IntraleFunction<DeleteRequest, DeleteRespons
 	private DeleteLinkFunction deleteLinkFunction;
 
 	@Override
-	public DeleteResponse execute(DeleteRequest request) throws FunctionException {
-		DeleteResponse response = new DeleteResponse(); 
-		
+	public Response execute(DeleteRequest request) throws FunctionException {
 		DeleteLinkRequest deleteLinkRequest = new DeleteLinkRequest();
 		deleteLinkRequest.setRequestId(request.getRequestId());
 		deleteLinkRequest.setEmail(request.getEmail());
@@ -48,10 +45,7 @@ public class DeleteFunction extends IntraleFunction<DeleteRequest, DeleteRespons
 				// do nothing
 			}
 		}
-		
-		response.setUsername(request.getEmail());
-		
-		return response;
+		return new Response();
 	}
 
 

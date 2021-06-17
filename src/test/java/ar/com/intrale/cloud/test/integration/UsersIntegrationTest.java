@@ -31,7 +31,6 @@ import ar.com.intrale.cloud.functions.SignInFunction;
 import ar.com.intrale.cloud.functions.SignUpFunction;
 import ar.com.intrale.cloud.functions.ValidateTokenFunction;
 import ar.com.intrale.cloud.messages.DeleteRequest;
-import ar.com.intrale.cloud.messages.DeleteResponse;
 import ar.com.intrale.cloud.messages.Group;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.ReadGroupResponse;
@@ -204,7 +203,6 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	passwordRecoveryRequest.setEmail(DUMMY_EMAIL);
     	
     	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
-    	//PasswordRecoveryResponse passwordRecoveryResponse = mapper.readValue(responseEvent.getBody(), PasswordRecoveryResponse.class); 
     	
     	deleteUser();   
         
@@ -232,12 +230,10 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	APIGatewayProxyRequestEvent requestEvent = makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME);
     	requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
     	responseEvent = lambda.execute(requestEvent);
-    	DeleteResponse deleteResponse  = mapper.readValue(responseEvent.getBody(), DeleteResponse.class);    	
 
     	requestEvent = makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME);
     	requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER");
     	responseEvent = lambda.execute(requestEvent);
-    	deleteResponse  = mapper.readValue(responseEvent.getBody(), DeleteResponse.class);
 	}
 
 
