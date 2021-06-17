@@ -12,6 +12,8 @@ import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupRequest;
 import com.amazonaws.services.cognitoidp.model.AdminListGroupsForUserRequest;
 import com.amazonaws.services.cognitoidp.model.AdminListGroupsForUserResult;
 import com.amazonaws.services.cognitoidp.model.AdminRemoveUserFromGroupRequest;
+import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
+import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.GroupType;
 
 import ar.com.intrale.cloud.IntraleFunction;
@@ -19,14 +21,31 @@ import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.UpdateUserRequest;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(IntraleFunction.UPDATE)
 @Requires(property = IntraleFunction.APP_INSTANTIATE + IntraleFunction.UPDATE , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
 public class UpdateUserFunction extends IntraleFunction<UpdateUserRequest, Response, AWSCognitoIdentityProvider> {
 	
+	public static final String FAMILY_NAME = "family_name";
+	public static final String NAME = "name";
+	
 	@Override
 	public Response execute(UpdateUserRequest request) throws FunctionException {
+	     AdminUpdateUserAttributesRequest adminUpdateUserAttributesRequest = new AdminUpdateUserAttributesRequest()
+			        .withUserPoolId(config.getCognito().getUserPoolId())
+					.withUsername(request.getEmail());
+			      
+	     if (!StringUtils.isEmpty(request.getName())) {
+	      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(NAME).withValue(request.getName()));
+	  	 }
+	     if (!StringUtils.isEmpty(request.getFamilyName())) {
+	    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(FAMILY_NAME).withValue(request.getFamilyName()));
+	     }
+	     
+	     provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
+		
 		AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
 		adminListGroupsForUserRequest.setUserPoolId(config.getCognito().getUserPoolId());
 		adminListGroupsForUserRequest.setUsername(request.getEmail());

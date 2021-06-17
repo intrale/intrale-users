@@ -168,6 +168,8 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	updateUserRequest.setRequestId(DUMMY_VALUE);
     	updateUserRequest.setEmail(DUMMY_EMAIL);
     	updateUserRequest.setGroups(groups);
+    	updateUserRequest.setFamilyName(DUMMY_VALUE);
+    	updateUserRequest.setName(DUMMY_VALUE);
     	
     	responseEvent = lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
