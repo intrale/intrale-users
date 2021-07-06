@@ -65,7 +65,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody("");
-        APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
+        APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 
         assertEquals(responseEvent.getStatusCode(), HttpResponse.badRequest().code());
     }
@@ -82,7 +82,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
-        APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
+        APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
         FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(responseEvent.getBody(), FunctionExceptionResponse.class);
 
         assertTrue(functionExceptionResponse.getErrors().size()>0);
@@ -125,7 +125,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
-        APIGatewayProxyResponseEvent responseEvent = lambda.execute(requestEvent);
+        APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
         ConfirmPasswordRecoveryResponse response  = mapper.readValue(responseEvent.getBody(), ConfirmPasswordRecoveryResponse.class);
         
         assertEquals(DUMMY_EMAIL, response.getEmail());

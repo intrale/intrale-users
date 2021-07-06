@@ -81,11 +81,11 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	APIGatewayProxyRequestEvent requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
 		Map<String, String> headers = requestEvent.getHeaders();
 		headers.remove(Lambda.HEADER_BUSINESS_NAME);
-		responseEvent = lambda.execute(requestEvent);
+		responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 		assertEquals(HttpStatus.NOT_FOUND.getCode(), responseEvent.getStatusCode());
 		
 		requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
-    	responseEvent = lambda.execute(requestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
         SignUpResponse signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
         assertEquals(DUMMY_EMAIL.toLowerCase(), signupResponse.getEmail().toLowerCase());
@@ -99,14 +99,14 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         signInRequest.setName(DUMMY_VALUE);
 
         // signin que luego requerira cambio de password
-    	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
     	assertEquals(HttpStatus.UPGRADE_REQUIRED.getCode(), responseEvent.getStatusCode());
     	
     	// Cambio de password durante el signin
     	String newPassword =  credentialGenerator.generate(temporaryPasswordConfig.length);
     	signInRequest.setNewPassword(newPassword);
     	
-    	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
         SignInResponse signinResponse  = mapper.readValue(responseEvent.getBody(), SignInResponse.class);
         
         assertNotNull(signinResponse.getAccessToken());
@@ -116,7 +116,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         // signin con la nueva password
         signInRequest.setPassword(newPassword);
         
-    	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
         signinResponse  = mapper.readValue(responseEvent.getBody(), SignInResponse.class);
         
         assertNotNull(signinResponse.getAccessToken());
@@ -126,20 +126,20 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         // signin con password incorrecta
         signInRequest.setPassword(DUMMY_VALUE);
 
-       	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
+       	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
         assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
         
         // se trata de hacer signin con otro negocio
         signInRequest.setPassword(newPassword);
         requestEvent = makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME);
         requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER2");
-    	responseEvent = lambda.execute(requestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 
     	assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
     	
         requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
         requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER");
-    	responseEvent = lambda.execute(requestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 
     	signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
     	
@@ -148,7 +148,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = makeRequestEvent(new Request(), ReadGroupFunction.FUNCTION_NAME);
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
-    	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(apiGatewayProxyRequestEvent);
     	ReadGroupResponse readGroupResponse = mapper.readValue(responseEvent.getBody(), ReadGroupResponse.class);
 
     	assertTrue(!readGroupResponse.getGroups().isEmpty());
@@ -170,26 +170,26 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	updateUserRequest.setFamilyName(DUMMY_VALUE);
     	updateUserRequest.setName(DUMMY_VALUE);
     	
-    	responseEvent = lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
     	
     	updateUserRequest.setGroups(groups.subList(1, groups.size()));
     	
-    	responseEvent = lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(updateUserRequest, IntraleFunction.UPDATE));
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
         
     	
     	ReadUserRequest readUserRequest = new ReadUserRequest();
     	readUserRequest.setRequestId(DUMMY_VALUE);
     	
-    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
     	ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);   
     
     	assertEquals(1, readUserResponse.getUsers().size());
     	
     	readUserRequest.setEmail(signInRequest.getEmail());
     	
-    	responseEvent = lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(readUserRequest, IntraleFunction.READ));
     	readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);
     	
     	assertEquals(1, readUserResponse.getUsers().size());
@@ -202,11 +202,11 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	passwordRecoveryRequest.setRequestId("001");
     	passwordRecoveryRequest.setEmail(DUMMY_EMAIL);
     	
-    	responseEvent = lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(passwordRecoveryRequest, PasswordRecoveryFunction.FUNCTION_NAME));
     	
     	deleteUser();   
         
-    	responseEvent = lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
     	
     	assertEquals(HttpStatus.UNAUTHORIZED.getCode(), responseEvent.getStatusCode());
     	
@@ -216,7 +216,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_ID_TOKEN, signinResponse.getIdToken());
     	apiGatewayProxyRequestEvent.getHeaders().put(Lambda.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
     	
-    	responseEvent = lambda.execute(apiGatewayProxyRequestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(apiGatewayProxyRequestEvent);
     	assertEquals(HttpStatus.OK.getCode(), responseEvent.getStatusCode());
     	
     }
@@ -229,11 +229,11 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	
     	APIGatewayProxyRequestEvent requestEvent = makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME);
     	requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
-    	responseEvent = lambda.execute(requestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 
     	requestEvent = makeRequestEvent(deleteRequest, DeleteFunction.FUNCTION_NAME);
     	requestEvent.getHeaders().put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER");
-    	responseEvent = lambda.execute(requestEvent);
+    	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 	}
 
 
