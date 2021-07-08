@@ -10,16 +10,20 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordRequest;
 import com.amazonaws.services.cognitoidp.model.ForgotPasswordResult;
 
-import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.BaseFunction;
+import ar.com.intrale.cloud.FunctionConst;
+import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
+import ar.com.intrale.cloud.messages.builders.StringToPasswordRecoveryRequestBuilder;
 import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(PasswordRecoveryFunction.FUNCTION_NAME)
-@Requires(property = IntraleFunction.APP_INSTANTIATE + PasswordRecoveryFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
-public class PasswordRecoveryFunction extends IntraleFunction<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider> {
+@Requires(property = FunctionConst.APP_INSTANTIATE + PasswordRecoveryFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
+public class PasswordRecoveryFunction extends 
+	BaseFunction<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider, StringToPasswordRecoveryRequestBuilder, FunctionResponseToHttpResponseBuilder> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryFunction.class);
 	

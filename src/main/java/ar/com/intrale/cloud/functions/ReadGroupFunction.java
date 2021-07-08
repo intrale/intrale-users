@@ -11,8 +11,11 @@ import com.amazonaws.services.cognitoidp.model.GroupType;
 import com.amazonaws.services.cognitoidp.model.ListGroupsRequest;
 import com.amazonaws.services.cognitoidp.model.ListGroupsResult;
 
-import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.BaseFunction;
+import ar.com.intrale.cloud.FunctionConst;
+import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
 import ar.com.intrale.cloud.Request;
+import ar.com.intrale.cloud.StringToRequestDefaultBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.Group;
 import ar.com.intrale.cloud.messages.ReadGroupResponse;
@@ -20,8 +23,9 @@ import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(ReadGroupFunction.FUNCTION_NAME)
-@Requires(property = IntraleFunction.APP_INSTANTIATE + ReadGroupFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
-public class ReadGroupFunction extends IntraleFunction<Request, ReadGroupResponse, AWSCognitoIdentityProvider> {
+@Requires(property = FunctionConst.APP_INSTANTIATE + ReadGroupFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
+public class ReadGroupFunction extends 
+	BaseFunction<Request, ReadGroupResponse, AWSCognitoIdentityProvider, StringToRequestDefaultBuilder, FunctionResponseToHttpResponseBuilder> {
 
 	public static final String FUNCTION_NAME = "readGroups";
 	

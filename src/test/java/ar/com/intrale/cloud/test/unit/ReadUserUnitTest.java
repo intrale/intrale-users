@@ -24,7 +24,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.Runner;
 import ar.com.intrale.cloud.messages.ReadUserRequest;

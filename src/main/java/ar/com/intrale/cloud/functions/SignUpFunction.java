@@ -16,21 +16,25 @@ import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 
+import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.CredentialsGenerator;
 import ar.com.intrale.cloud.Error;
-import ar.com.intrale.cloud.IntraleFunction;
-import ar.com.intrale.cloud.Lambda;
+import ar.com.intrale.cloud.FunctionBuilder;
+import ar.com.intrale.cloud.FunctionConst;
+import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.UserExistsException;
 import ar.com.intrale.cloud.messages.SignUpRequest;
 import ar.com.intrale.cloud.messages.SignUpResponse;
+import ar.com.intrale.cloud.messages.builders.StringToSignUpRequestBuilder;
 import io.micronaut.context.annotation.Requires;
 
 @Singleton
 @Named(SignUpFunction.FUNCTION_NAME)
-@Requires(property = IntraleFunction.APP_INSTANTIATE + SignUpFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
-public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider> {
+@Requires(property = FunctionConst.APP_INSTANTIATE + SignUpFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
+public class SignUpFunction extends 
+	BaseFunction<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider, StringToSignUpRequestBuilder, FunctionResponseToHttpResponseBuilder> {
 
 	public static final String FUNCTION_NAME = "signup";
 	
@@ -48,13 +52,13 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 		SignUpResponse response = new SignUpResponse(); 
 
 		String temporaryPassword = credentialGenerator.generate(temporaryPasswordConfig.length);
-		String businessName = request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME);
+		String businessName = request.getHeaders().get(FunctionBuilder.HEADER_BUSINESS_NAME);
 		
 		AdminCreateUserRequest adminCreateUserRequest = new AdminCreateUserRequest()
 				.withUserPoolId(config.getCognito().getUserPoolId())
 				.withUsername(request.getEmail())
 				.withUserAttributes(new AttributeType().withName(EMAIL).withValue(request.getEmail()))
-				.withUserAttributes(new AttributeType().withName(BUSINESS_ATTRIBUTE).withValue(businessName) )
+				.withUserAttributes(new AttributeType().withName(FunctionConst.BUSINESS_ATTRIBUTE).withValue(businessName) )
 				.withTemporaryPassword(temporaryPassword);
 		
 		try {
@@ -67,7 +71,7 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 			
 			Map<String, String> attributes = adminGetUserResult.getUserAttributes().stream()
 				      .collect(Collectors.toMap(AttributeType::getName, AttributeType::getValue));
-			String businessAttributeValue = attributes.get(BUSINESS_ATTRIBUTE);
+			String businessAttributeValue = attributes.get(FunctionConst.BUSINESS_ATTRIBUTE);
 			if (businessAttributeValue.contains(businessName)) {
 				throw new UserExistsException(new Error(FIELD_USERNAME_ALREADY_EXIST, "Field username already exists"), mapper);
 			}
@@ -76,7 +80,7 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 				        .withUserPoolId(config.getCognito().getUserPoolId())
 						.withUsername(request.getEmail());
 				      
-		      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(BUSINESS_ATTRIBUTE).withValue(businessAttributeValue + BUSINESS_ATTRIBUTE_SEPARATOR + businessName));
+		      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(FunctionConst.BUSINESS_ATTRIBUTE).withValue(businessAttributeValue + FunctionConst.BUSINESS_ATTRIBUTE_SEPARATOR + businessName));
 		     
 		     provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
 			
@@ -87,7 +91,7 @@ public class SignUpFunction extends IntraleFunction<SignUpRequest, SignUpRespons
 	    }
 	    
 	    response.setEmail(request.getEmail());	
-	    response.setBusinessName(request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME));
+	    response.setBusinessName(request.getHeaders().get(FunctionBuilder.HEADER_BUSINESS_NAME));
 		return response;
 	}
 

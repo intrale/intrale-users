@@ -26,8 +26,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import ar.com.intrale.cloud.Error;
+import ar.com.intrale.cloud.FunctionBuilder;
 import ar.com.intrale.cloud.FunctionExceptionResponse;
-import ar.com.intrale.cloud.Lambda;
 import ar.com.intrale.cloud.Runner;
 import ar.com.intrale.cloud.functions.SignUpFunction;
 import ar.com.intrale.cloud.messages.SignUpRequest;
@@ -67,8 +67,8 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
     public void testRequestNull() throws JsonProcessingException {
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
-        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
+        headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody("");
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
@@ -84,8 +84,8 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
        
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
-        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
+        headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
@@ -137,8 +137,8 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
-        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
+        headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
@@ -180,8 +180,8 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(Lambda.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
-        headers.put(Lambda.HEADER_BUSINESS_NAME, DUMMY_VALUE);
+        headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
+        headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);

@@ -23,5 +23,7 @@ public class UsersFactory extends IntraleFactory<AWSCognitoIdentityProvider>{
 	                      .withRegion(config.getAws().getRegion())
 	                             .build();
 	}
+	
+	
 
 }

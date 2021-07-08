@@ -16,17 +16,21 @@ import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.GroupType;
 
-import ar.com.intrale.cloud.IntraleFunction;
+import ar.com.intrale.cloud.BaseFunction;
+import ar.com.intrale.cloud.FunctionConst;
+import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
 import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.UpdateUserRequest;
+import ar.com.intrale.cloud.messages.builders.StringToUpdateUserRequestBuilder;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 @Singleton
-@Named(IntraleFunction.UPDATE)
-@Requires(property = IntraleFunction.APP_INSTANTIATE + IntraleFunction.UPDATE , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
-public class UpdateUserFunction extends IntraleFunction<UpdateUserRequest, Response, AWSCognitoIdentityProvider> {
+@Named(FunctionConst.UPDATE)
+@Requires(property = FunctionConst.APP_INSTANTIATE + FunctionConst.UPDATE , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
+public class UpdateUserFunction extends 
+	BaseFunction<UpdateUserRequest, Response, AWSCognitoIdentityProvider, StringToUpdateUserRequestBuilder, FunctionResponseToHttpResponseBuilder> {
 	
 	public static final String FAMILY_NAME = "family_name";
 	public static final String NAME = "name";

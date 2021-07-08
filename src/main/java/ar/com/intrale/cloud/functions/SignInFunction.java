@@ -25,21 +25,25 @@ import com.amazonaws.services.cognitoidp.model.ChallengeNameType;
 import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
+import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.Error;
-import ar.com.intrale.cloud.IntraleFunction;
-import ar.com.intrale.cloud.Lambda;
+import ar.com.intrale.cloud.FunctionBuilder;
+import ar.com.intrale.cloud.FunctionConst;
+import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.NewPasswordRequiredException;
 import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
 import ar.com.intrale.cloud.messages.SignInRequest;
 import ar.com.intrale.cloud.messages.SignInResponse;
+import ar.com.intrale.cloud.messages.builders.StringToSignInRequestBuilder;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 @Singleton
 @Named(SignInFunction.FUNCTION_NAME)
-@Requires(property = IntraleFunction.APP_INSTANTIATE + SignInFunction.FUNCTION_NAME , value = IntraleFunction.TRUE, defaultValue = IntraleFunction.TRUE)
-public class SignInFunction extends IntraleFunction<SignInRequest, SignInResponse, AWSCognitoIdentityProvider> {
+@Requires(property = FunctionConst.APP_INSTANTIATE + SignInFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
+public class SignInFunction extends 
+	BaseFunction<SignInRequest, SignInResponse, AWSCognitoIdentityProvider, StringToSignInRequestBuilder, FunctionResponseToHttpResponseBuilder> {
 	
 	private static final String NOT_LINKED_WITH_BUSINESS_MESSAGE = "NOT LINKED WITH BUSINESS ";
 
@@ -67,7 +71,7 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 		LOGGER.info("INTRALE: LOGIN INITIALIZING ");
 		SignInResponse response = new SignInResponse();
 		try {
-			String businessName = request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME);
+			String businessName = request.getHeaders().get(FunctionBuilder.HEADER_BUSINESS_NAME);
 		
 			AdminGetUserResult adminGetUserResult = null;
 			try {
@@ -76,12 +80,12 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 				adminGetUserRequest.setUsername(request.getEmail());
 				adminGetUserResult =  provider.adminGetUser(adminGetUserRequest);
 			} catch (UserNotFoundException e) {
-				throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
+				throw new UnauthorizeExeption(new Error(FunctionConst.UNAUTHORIZED, FunctionConst.UNAUTHORIZED), mapper);
 			}
 			
 			Map<String, String> attributes = adminGetUserResult.getUserAttributes().stream()
 				      .collect(Collectors.toMap(AttributeType::getName, AttributeType::getValue));
-			String businessAttributeValue = attributes.get(BUSINESS_ATTRIBUTE);
+			String businessAttributeValue = attributes.get(FunctionConst.BUSINESS_ATTRIBUTE);
 			
 			if (businessAttributeValue.contains(businessName)) {
 			    final Map<String, String>authParams = new HashMap();
@@ -136,7 +140,7 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 				    	  adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(FAMILY_NAME).withValue(request.getFamilyName()));
 				      }
 				      
-				      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(EMAIL_VERIFIED_ATTRIBUTE).withValue(TRUE));
+				      adminUpdateUserAttributesRequest.withUserAttributes(new AttributeType().withName(EMAIL_VERIFIED_ATTRIBUTE).withValue(FunctionConst.TRUE));
 				      
 				      provider.adminUpdateUserAttributes(adminUpdateUserAttributesRequest);
 				      
@@ -149,12 +153,12 @@ public class SignInFunction extends IntraleFunction<SignInRequest, SignInRespons
 			   response.setAccessToken(authenticationResult.getAccessToken());
 			   response.setRefreshToken(authenticationResult.getRefreshToken());
 			} else {
-				throw new UnauthorizeExeption(new Error(UNAUTHORIZED, NOT_LINKED_WITH_BUSINESS_MESSAGE + request.getHeaders().get(Lambda.HEADER_BUSINESS_NAME)), mapper);
+				throw new UnauthorizeExeption(new Error(FunctionConst.UNAUTHORIZED, NOT_LINKED_WITH_BUSINESS_MESSAGE + request.getHeaders().get(FunctionBuilder.HEADER_BUSINESS_NAME)), mapper);
 			}
 		   LOGGER.info("finalizando handler");
 	       return response;
 	   } catch (NotAuthorizedException e) {
-			throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
+			throw new UnauthorizeExeption(new Error(FunctionConst.UNAUTHORIZED, FunctionConst.UNAUTHORIZED), mapper);
 	   }
 	}
 
