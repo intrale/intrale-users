@@ -9,7 +9,7 @@ import com.amazonaws.services.cognitoidp.model.ConfirmForgotPasswordResult;
 
 import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.ConfirmPasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.ConfirmPasswordRecoveryResponse;
@@ -21,7 +21,7 @@ import io.micronaut.context.annotation.Requires;
 @Requires(property = FunctionConst.APP_INSTANTIATE + ConfirmPasswordRecoveryFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class ConfirmPasswordRecoveryFunction extends 
 	BaseFunction<ConfirmPasswordRecoveryRequest, ConfirmPasswordRecoveryResponse, 
-	AWSCognitoIdentityProvider, StringToConfirmPasswordRecoveryRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	AWSCognitoIdentityProvider, StringToConfirmPasswordRecoveryRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 
 	
 	public static final String FUNCTION_NAME = "confirmPasswordRecovery";

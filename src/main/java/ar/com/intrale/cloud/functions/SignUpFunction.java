@@ -21,7 +21,7 @@ import ar.com.intrale.cloud.CredentialsGenerator;
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.FunctionBuilder;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.TemporaryPasswordConfig;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.UserExistsException;
@@ -34,7 +34,7 @@ import io.micronaut.context.annotation.Requires;
 @Named(SignUpFunction.FUNCTION_NAME)
 @Requires(property = FunctionConst.APP_INSTANTIATE + SignUpFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class SignUpFunction extends 
-	BaseFunction<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider, StringToSignUpRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<SignUpRequest, SignUpResponse, AWSCognitoIdentityProvider, StringToSignUpRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 
 	public static final String FUNCTION_NAME = "signup";
 	

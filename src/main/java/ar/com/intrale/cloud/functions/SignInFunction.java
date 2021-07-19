@@ -29,7 +29,7 @@ import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.Error;
 import ar.com.intrale.cloud.FunctionBuilder;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.NewPasswordRequiredException;
 import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
@@ -43,7 +43,7 @@ import io.micronaut.core.util.StringUtils;
 @Named(SignInFunction.FUNCTION_NAME)
 @Requires(property = FunctionConst.APP_INSTANTIATE + SignInFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class SignInFunction extends 
-	BaseFunction<SignInRequest, SignInResponse, AWSCognitoIdentityProvider, StringToSignInRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<SignInRequest, SignInResponse, AWSCognitoIdentityProvider, StringToSignInRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 	
 	private static final String NOT_LINKED_WITH_BUSINESS_MESSAGE = "NOT LINKED WITH BUSINESS ";
 

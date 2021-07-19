@@ -9,7 +9,7 @@ import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
 import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.DeleteRequest;
@@ -20,7 +20,7 @@ import io.micronaut.context.annotation.Requires;
 @Named(DeleteFunction.FUNCTION_NAME)
 @Requires(property = FunctionConst.APP_INSTANTIATE + DeleteFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class DeleteFunction extends 
-	BaseFunction<DeleteRequest, Response, AWSCognitoIdentityProvider, StringToDeleteRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<DeleteRequest, Response, AWSCognitoIdentityProvider, StringToDeleteRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 
 	public static final String FUNCTION_NAME = "delete";
 	

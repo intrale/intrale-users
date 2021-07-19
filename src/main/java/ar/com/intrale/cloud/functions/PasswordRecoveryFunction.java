@@ -12,7 +12,7 @@ import com.amazonaws.services.cognitoidp.model.ForgotPasswordResult;
 
 import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.PasswordRecoveryRequest;
 import ar.com.intrale.cloud.messages.PasswordRecoveryResponse;
@@ -23,7 +23,7 @@ import io.micronaut.context.annotation.Requires;
 @Named(PasswordRecoveryFunction.FUNCTION_NAME)
 @Requires(property = FunctionConst.APP_INSTANTIATE + PasswordRecoveryFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class PasswordRecoveryFunction extends 
-	BaseFunction<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider, StringToPasswordRecoveryRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<PasswordRecoveryRequest, PasswordRecoveryResponse, AWSCognitoIdentityProvider, StringToPasswordRecoveryRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryFunction.class);
 	

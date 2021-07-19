@@ -19,7 +19,7 @@ import com.amazonaws.services.cognitoidp.model.UserType;
 import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.FunctionBuilder;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.ReadUserRequest;
 import ar.com.intrale.cloud.messages.ReadUserResponse;
@@ -32,7 +32,7 @@ import io.micronaut.core.util.StringUtils;
 @Named(FunctionConst.READ)
 @Requires(property = FunctionConst.APP_INSTANTIATE + FunctionConst.READ , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class ReadUserFunction extends 
-	BaseFunction<ReadUserRequest, ReadUserResponse, AWSCognitoIdentityProvider, StringToReadUserRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<ReadUserRequest, ReadUserResponse, AWSCognitoIdentityProvider, StringToReadUserRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 
 	public static final String EMAIL = "email";
 	public static final String FAMILY_NAME = "family_name";

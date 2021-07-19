@@ -7,7 +7,7 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 
 import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.Request;
 import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.StringToRequestDefaultBuilder;
@@ -18,7 +18,7 @@ import io.micronaut.context.annotation.Requires;
 @Named(ValidateTokenFunction.FUNCTION_NAME)
 @Requires(property = FunctionConst.APP_INSTANTIATE + ValidateTokenFunction.FUNCTION_NAME , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class ValidateTokenFunction extends 
-	BaseFunction<Request, Response, AWSCognitoIdentityProvider, StringToRequestDefaultBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<Request, Response, AWSCognitoIdentityProvider, StringToRequestDefaultBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 	
 	public static final String FUNCTION_NAME = "validateToken";
 

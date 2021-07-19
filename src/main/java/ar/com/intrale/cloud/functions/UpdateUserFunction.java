@@ -18,7 +18,7 @@ import com.amazonaws.services.cognitoidp.model.GroupType;
 
 import ar.com.intrale.cloud.BaseFunction;
 import ar.com.intrale.cloud.FunctionConst;
-import ar.com.intrale.cloud.FunctionResponseToHttpResponseBuilder;
+import ar.com.intrale.cloud.FunctionResponseToBase64HttpResponseBuilder;
 import ar.com.intrale.cloud.Response;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.messages.UpdateUserRequest;
@@ -30,7 +30,7 @@ import io.micronaut.core.util.StringUtils;
 @Named(FunctionConst.UPDATE)
 @Requires(property = FunctionConst.APP_INSTANTIATE + FunctionConst.UPDATE , value = FunctionConst.TRUE, defaultValue = FunctionConst.TRUE)
 public class UpdateUserFunction extends 
-	BaseFunction<UpdateUserRequest, Response, AWSCognitoIdentityProvider, StringToUpdateUserRequestBuilder, FunctionResponseToHttpResponseBuilder> {
+	BaseFunction<UpdateUserRequest, Response, AWSCognitoIdentityProvider, StringToUpdateUserRequestBuilder, FunctionResponseToBase64HttpResponseBuilder> {
 	
 	public static final String FAMILY_NAME = "family_name";
 	public static final String NAME = "name";
