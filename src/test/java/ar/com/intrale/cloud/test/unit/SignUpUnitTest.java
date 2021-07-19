@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,7 +81,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
     
     
     @Test
-    public void testValidationRequiredsNotPresent() throws JsonProcessingException {
+    public void testValidationRequiredsNotPresent() throws IOException {
     	SignUpRequest request = new SignUpRequest();
        
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
@@ -108,7 +110,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
 	}
     
     @Test
-    public void testSignupOK() throws JsonMappingException, JsonProcessingException {
+    public void testSignupOK() throws IOException {
     	AdminCreateUserResult result = new AdminCreateUserResult();
     	UserType userType = new UserType();
     	userType.setUsername(DUMMY_EMAIL);
@@ -142,13 +144,13 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-        SignUpResponse response  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
+        SignUpResponse response  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), SignUpResponse.class);
         
         assertEquals(DUMMY_EMAIL, response.getEmail());
     }
     
     @Test
-    public void testUsernameExist() throws JsonMappingException, JsonProcessingException {
+    public void testUsernameExist() throws IOException {
     	AWSCognitoIdentityProvider provider = applicationContext.getBean(AWSCognitoIdentityProvider.class);
     	Mockito.when(provider.adminCreateUser(any())).thenThrow(UsernameExistsException.class);
     	

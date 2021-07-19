@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,7 +104,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
 	}
     
     @Test
-    public void testOK() throws JsonMappingException, JsonProcessingException {
+    public void testOK() throws IOException {
     	AdminCreateUserResult result = new AdminCreateUserResult();
     	UserType userType = new UserType();
     	userType.setUsername(DUMMY_EMAIL);
@@ -126,7 +128,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-        ConfirmPasswordRecoveryResponse response  = mapper.readValue(responseEvent.getBody(), ConfirmPasswordRecoveryResponse.class);
+        ConfirmPasswordRecoveryResponse response  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), ConfirmPasswordRecoveryResponse.class);
         
         assertEquals(DUMMY_EMAIL, response.getEmail());
     }

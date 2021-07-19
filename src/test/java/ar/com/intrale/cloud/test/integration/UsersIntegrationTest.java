@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -86,7 +87,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
 		
 		requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-        SignUpResponse signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
+        SignUpResponse signupResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), SignUpResponse.class);
     	
         assertEquals(DUMMY_EMAIL.toLowerCase(), signupResponse.getEmail().toLowerCase());
         
@@ -107,7 +108,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	signInRequest.setNewPassword(newPassword);
     	
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
-        SignInResponse signinResponse  = mapper.readValue(responseEvent.getBody(), SignInResponse.class);
+        SignInResponse signinResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), SignInResponse.class);
         
         assertNotNull(signinResponse.getAccessToken());
         assertNotNull(signinResponse.getIdToken());
@@ -117,7 +118,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         signInRequest.setPassword(newPassword);
         
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(signInRequest, SignInFunction.FUNCTION_NAME));
-        signinResponse  = mapper.readValue(responseEvent.getBody(), SignInResponse.class);
+        signinResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), SignInResponse.class);
         
         assertNotNull(signinResponse.getAccessToken());
         assertNotNull(signinResponse.getIdToken());
@@ -141,7 +142,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
         requestEvent.getHeaders().put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE + "_OTHER");
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
 
-    	signupResponse  = mapper.readValue(responseEvent.getBody(), SignUpResponse.class);
+    	signupResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), SignUpResponse.class);
     	
         assertEquals(DUMMY_EMAIL.toLowerCase(), signupResponse.getEmail().toLowerCase());
         
@@ -149,7 +150,7 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	apiGatewayProxyRequestEvent.getHeaders().put(FunctionBuilder.HEADER_ID_TOKEN, signinResponse.getIdToken());
     	apiGatewayProxyRequestEvent.getHeaders().put(FunctionBuilder.HEADER_AUTHORIZATION, signinResponse.getAccessToken());
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(apiGatewayProxyRequestEvent);
-    	ReadGroupResponse readGroupResponse = mapper.readValue(responseEvent.getBody(), ReadGroupResponse.class);
+    	ReadGroupResponse readGroupResponse = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), ReadGroupResponse.class);
 
     	assertTrue(!readGroupResponse.getGroups().isEmpty());
 
@@ -183,14 +184,14 @@ public class UsersIntegrationTest extends ar.com.intrale.cloud.Test{
     	readUserRequest.setRequestId(DUMMY_VALUE);
     	
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(readUserRequest, FunctionConst.READ));
-    	ReadUserResponse readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);   
+    	ReadUserResponse readUserResponse = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), ReadUserResponse.class);   
     
     	assertEquals(1, readUserResponse.getUsers().size());
     	
     	readUserRequest.setEmail(signInRequest.getEmail());
     	
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(makeRequestEvent(readUserRequest, FunctionConst.READ));
-    	readUserResponse = mapper.readValue(responseEvent.getBody(), ReadUserResponse.class);
+    	readUserResponse = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), ReadUserResponse.class);
     	
     	assertEquals(1, readUserResponse.getUsers().size());
     	

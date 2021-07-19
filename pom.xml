@@ -210,7 +210,8 @@
 					      <limit>
 					        <counter>LINE</counter>
 					        <value>COVEREDRATIO</value>
-					        <minimum>${test-covered-ratio}</minimum>
+					        <!-- minimum>${test-covered-ratio}</minimum -->
+					        <minimum>0.97</minimum>
 					      </limit>
 					    </limits>
 					  </rule>
