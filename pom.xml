@@ -3,11 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>users</artifactId>
+<version>0.5</version>
 
   <parent>
     <groupId>ar.com.intrale.cloud</groupId>
     <artifactId>parent</artifactId>
-    <version>0.4.5</version>
+    <version>0.5</version>
   </parent>
 
   <properties>
@@ -67,12 +68,12 @@
 	<dependency>
 		<groupId>ar.com.intrale.cloud</groupId>
 		<artifactId>commons</artifactId>
-		<version>${commons.version}</version>
+		<version>0.5.1</version>
 	</dependency>
 	<dependency>
 		<groupId>ar.com.intrale.cloud</groupId>
 		<artifactId>test</artifactId>
-		<version>${test.version}</version>
+		<version>0.5</version>
 		<scope>test</scope>
 	</dependency>
   </dependencies>
