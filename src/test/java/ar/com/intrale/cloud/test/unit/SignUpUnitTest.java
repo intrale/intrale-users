@@ -89,7 +89,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
-        requestEvent.setBody(mapper.writeValueAsString(request));
+        requestEvent.setBody(Base64.getEncoder().encodeToString(mapper.writeValueAsString(request).getBytes()));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
         FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), FunctionExceptionResponse.class);
 
@@ -142,7 +142,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
-        requestEvent.setBody(mapper.writeValueAsString(request));
+        requestEvent.setBody(Base64.getEncoder().encodeToString(mapper.writeValueAsString(request).getBytes()));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
         SignUpResponse response  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), SignUpResponse.class);
         
@@ -185,7 +185,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         headers.put(FunctionBuilder.HEADER_FUNCTION, SignUpFunction.FUNCTION_NAME);
         headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, DUMMY_VALUE);
         requestEvent.setHeaders(headers);
-        requestEvent.setBody(mapper.writeValueAsString(request));
+        requestEvent.setBody(Base64.getEncoder().encodeToString(mapper.writeValueAsString(request).getBytes()));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
         FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), FunctionExceptionResponse.class);
         
