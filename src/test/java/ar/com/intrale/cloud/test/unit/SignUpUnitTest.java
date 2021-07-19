@@ -91,7 +91,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-        FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(responseEvent.getBody(), FunctionExceptionResponse.class);
+        FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), FunctionExceptionResponse.class);
 
         assertTrue(functionExceptionResponse.getErrors().size()>0);
         assertTrue(containError(functionExceptionResponse.getErrors(), "email"));
@@ -187,7 +187,7 @@ public class SignUpUnitTest extends ar.com.intrale.cloud.Test{
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-        FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(responseEvent.getBody(), FunctionExceptionResponse.class);
+        FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), FunctionExceptionResponse.class);
         
         assertEquals(HttpStatus.BAD_REQUEST.getCode(), responseEvent.getStatusCode());
         assertTrue(containError(functionExceptionResponse.getErrors(), SignUpFunction.FIELD_USERNAME_ALREADY_EXIST));

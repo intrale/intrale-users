@@ -75,7 +75,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
     
     
    @Test
-    public void testValidationRequiredsNotPresent() throws JsonProcessingException {
+    public void testValidationRequiredsNotPresent() throws IOException {
     	ConfirmPasswordRecoveryRequest request = new ConfirmPasswordRecoveryRequest();
        
     	APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
@@ -85,7 +85,7 @@ public class ConfirmPasswordRecoveryUnitTest extends ar.com.intrale.cloud.Test{
         requestEvent.setHeaders(headers);
         requestEvent.setBody(mapper.writeValueAsString(request));
         APIGatewayProxyResponseEvent responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-        FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(responseEvent.getBody(), FunctionExceptionResponse.class);
+        FunctionExceptionResponse functionExceptionResponse  = mapper.readValue(Base64.getDecoder().decode(responseEvent.getBody()), FunctionExceptionResponse.class);
 
         assertTrue(functionExceptionResponse.getErrors().size()>0);
         assertTrue(containError(functionExceptionResponse.getErrors(), "email"));
