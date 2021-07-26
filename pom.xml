@@ -3,17 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>users</artifactId>
-<version>0.5.6</version>
 
   <parent>
     <groupId>ar.com.intrale.cloud</groupId>
     <artifactId>parent</artifactId>
-    <version>0.5</version>
+    <version>DEV</version>
   </parent>
 
   <properties>
-  	<commons.version>${project.version}</commons.version>
-  	<test.version>${project.version}</test.version>
   
 	<cognito.access>${env.COGNITO_ACCESS}</cognito.access>
 	<cognito.secret>${env.COGNITO_SECRET}</cognito.secret>   
@@ -68,12 +65,12 @@
 	<dependency>
 		<groupId>ar.com.intrale.cloud</groupId>
 		<artifactId>commons</artifactId>
-		<version>0.5.11</version>
+		<version>DEV</version>
 	</dependency>
 	<dependency>
 		<groupId>ar.com.intrale.cloud</groupId>
 		<artifactId>test</artifactId>
-		<version>0.5.1</version>
+		<version>DEV</version>
 		<scope>test</scope>
 	</dependency>
   </dependencies>
