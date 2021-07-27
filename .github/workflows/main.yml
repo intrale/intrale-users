@@ -8,13 +8,13 @@ jobs:
   deploy-lambda:
     runs-on: ubuntu-latest
     steps:
-    - name: Call intrale-test
-      if: (github.event.action != 'ping_parent') && (github.event.action != 'pong_parent') 
-      run: |
-         curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
-          -H 'Accept: application/vnd.github.everest-preview+json' \
-          -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
-          --data '{"event_type": "ping_child", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'     
+      - name: Call intrale-test
+        if: (github.event.action != 'ping_parent') && (github.event.action != 'pong_parent') 
+        run: |
+           curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
+            -H 'Accept: application/vnd.github.everest-preview+json' \
+            -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
+            --data '{"event_type": "ping_child", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'     
       - uses: actions/checkout@master
         if: (github.event.action == 'ping_parent') || (github.event.action == 'pong_parent') 
       - uses: actions/setup-java@v1
