@@ -3,6 +3,7 @@ name: CI intrale-users
 on:
   push:
     branches: [ main ]
+  repository_dispatch:     
 
 jobs:
   deploy-lambda:
