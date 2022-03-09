@@ -5,7 +5,7 @@
   <artifactId>users</artifactId>
 
   <parent>
-    <groupId>ar.com.intrale.cloud</groupId>
+    <groupId>ar.com.intrale</groupId>
     <artifactId>parent</artifactId>
     <version>DEV</version>
   </parent>
@@ -63,12 +63,12 @@
 		<version>${aws-java-sdk.version}</version>
 	</dependency>
 	<dependency>
-		<groupId>ar.com.intrale.cloud</groupId>
+		<groupId>ar.com.intrale</groupId>
 		<artifactId>commons</artifactId>
 		<version>DEV</version>
 	</dependency>
 	<dependency>
-		<groupId>ar.com.intrale.cloud</groupId>
+		<groupId>ar.com.intrale</groupId>
 		<artifactId>test</artifactId>
 		<version>DEV</version>
 		<scope>test</scope>
@@ -142,7 +142,7 @@
             </path>
           </annotationProcessorPaths>
           <compilerArgs>
-            <arg>-Amicronaut.processing.group=ar.com.intrale.cloud</arg>
+            <arg>-Amicronaut.processing.group=ar.com.intrale</arg>
             <arg>-Amicronaut.processing.module=IntraleFunction</arg>
           </compilerArgs>
         </configuration>
