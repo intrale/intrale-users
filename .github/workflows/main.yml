@@ -116,3 +116,27 @@ jobs:
           package-name: 'ar.com.intrale.users'
           min-versions-to-keep: 3
           token: ${{ secrets.MAVEN_SERVER_PASSWORD }}             
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v3
+        with:
+          owner: 'llarreta'
+          repo: 'intrale'
+          package-name: 'ar.com.intrale.users-core'
+          min-versions-to-keep: 3
+          token: ${{ secrets.MAVEN_SERVER_PASSWORD }}               
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v3
+        with:
+          owner: 'llarreta'
+          repo: 'intrale'
+          package-name: 'ar.com.intrale.users-services'
+          min-versions-to-keep: 3
+          token: ${{ secrets.MAVEN_SERVER_PASSWORD }}            
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v3
+        with:
+          owner: 'llarreta'
+          repo: 'intrale'
+          package-name: 'ar.com.intrale.users-client'
+          min-versions-to-keep: 3
+          token: ${{ secrets.MAVEN_SERVER_PASSWORD }}                
