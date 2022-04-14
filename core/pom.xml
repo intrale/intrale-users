@@ -7,7 +7,7 @@
   <parent>
     <groupId>ar.com.intrale</groupId>
     <artifactId>users</artifactId>
-    <version>DEV_USERS</version>
+    <version>USERS_VERSION</version>
   </parent>
 
   <repositories>

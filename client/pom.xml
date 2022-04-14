@@ -7,7 +7,7 @@
   <parent>
     <groupId>ar.com.intrale</groupId>
     <artifactId>users</artifactId>
-    <version>DEV_USERS</version>
+    <version>USERS_VERSION</version>
   </parent>
 
   <profiles>
@@ -199,7 +199,7 @@
   	<dependency>
 		<groupId>ar.com.intrale</groupId>
 		<artifactId>users-core</artifactId>
-		<version>DEV_USERS</version>
+		<version>USERS_VERSION</version>
 		<exclusions>
 			<exclusion>
 				<groupId>ar.com.intrale</groupId>

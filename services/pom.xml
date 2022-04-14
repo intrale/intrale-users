@@ -7,7 +7,7 @@
   <parent>
     <groupId>ar.com.intrale</groupId>
     <artifactId>users</artifactId>
-    <version>DEV_USERS</version>
+    <version>USERS_VERSION</version>
   </parent>
 
   <properties>
@@ -217,7 +217,7 @@
   	<dependency>
 		<groupId>ar.com.intrale</groupId>
 		<artifactId>users-core</artifactId>
-		<version>DEV_USERS</version>
+		<version>USERS_VERSION</version>
   	</dependency>
 	<dependency>
 		<groupId>com.amazonaws</groupId>
