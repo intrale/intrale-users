@@ -72,7 +72,7 @@ jobs:
           git tag -a VER_${{ env.TAG }} -m 'VER_${{ env.TAG }}'
           git push origin VER_${{ env.TAG }}
           echo "Finalizando interaccion con fuentes"        
-      - name: Deploy to Github Package Registry
+      - name: Compile and Upload Service to Github Package Registry
         env:
           PARENT_VERSION: ${{ env.PARENT_VERSION }}
           CORE_VERSION: ${{ env.CORE_VERSION }}
@@ -92,13 +92,15 @@ jobs:
           sed -i "s/TEST_VERSION/${TEST_VERSION}/gi" pom.xml
           sed -i "s/USERS_VERSION/${VERSION_TARGET}/gi" pom.xml
           sed -i "s/USERS_VERSION/${VERSION_TARGET}/gi" ./core/pom.xml
+          sed -i "s/CORE_VERSION/${CORE_VERSION}/gi" ./core/pom.xml
           sed -i "s/USERS_VERSION/${VERSION_TARGET}/gi" ./services/pom.xml
-          sed -i "s/USERS_VERSION/${VERSION_TARGET}/gi" ./client/pom.xml
+          sed -i "s/COMMONS_VERSION/${COMMONS_VERSION}/gi" ./services/pom.xml
+          sed -i "s/TEST_VERSION/${TEST_VERSION}/gi" ./services/pom.xml
           mkdir -p ~/.m2
           echo "<settings><servers><server><id>github</id><username>${MAVEN_SERVER_USERNAME}</username><password>${MAVEN_SERVER_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
           mvn clean compile package install
           mvn -e -X deploy
-      - name: deploy lambda
+      - name: Deploy lambda
         uses: yvesgurcan/deploy-lambda-function@master
         with:
           package: ./services/target/users-services.jar
@@ -106,6 +108,26 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_DEPLOY_REGION }}
           AWS_SECRET_ID: ${{ secrets.AWS_DEPLOYER_SECRET_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_DEPLOYER_SECRET_KEY }} 
+      - name: Compile and Upload Client to Github Package Registry
+        env:
+          PARENT_VERSION: ${{ env.PARENT_VERSION }}
+          CORE_VERSION: ${{ env.CORE_VERSION }}
+          COMMONS_VERSION: ${{ env.COMMONS_VERSION }}
+          TEST_VERSION: ${{ env.TEST_VERSION }}
+          VERSION_TARGET: ${{ env.VERSION_TARGET }}
+          MAVEN_SERVER_USERNAME: ${{ secrets.MAVEN_SERVER_USERNAME }}
+          MAVEN_SERVER_PASSWORD: ${{ secrets.MAVEN_SERVER_PASSWORD }}
+          COGNITO_ACCESS: ${{ secrets.COGNITO_ACCESS }} 
+          COGNITO_SECRET: ${{ secrets.COGNITO_SECRET }} 
+          DATABASE_ACCESS: ${{ secrets.DATABASE_ACCESS }} 
+          DATABASE_SECRET: ${{ secrets.DATABASE_SECRET }} 
+        run: |
+          sed -i "s/USERS_VERSION/${VERSION_TARGET}/gi" ./client/pom.xml
+          sed -i "s/CORE_VERSION/${CORE_VERSION}/gi" ./client/pom.xml
+          sed -i "s/COMMONS_VERSION/${COMMONS_VERSION}/gi" ./client/pom.xml
+          cd client
+          mvn clean compile package install
+          mvn -e -X deploy         
       - name: Delete old packages
         uses: actions/delete-package-versions@v3
         with:
