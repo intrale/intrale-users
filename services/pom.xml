@@ -1,229 +1,243 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>users-services</artifactId>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>users-services</artifactId>
 
-  <parent>
-    <groupId>ar.com.intrale</groupId>
-    <artifactId>users</artifactId>
-    <version>USERS_VERSION</version>
-  </parent>
+	<parent>
+		<groupId>ar.com.intrale</groupId>
+		<artifactId>users</artifactId>
+		<version>USERS_VERSION</version>
+	</parent>
 
-  <properties>
-  
-	<cognito.access>${env.COGNITO_ACCESS}</cognito.access>
-	<cognito.secret>${env.COGNITO_SECRET}</cognito.secret>    
+	<properties>
 
-  </properties>
+		<function.package>ar.com.intrale</function.package>
+		<function.name>IntraleFunction</function.name>
 
-  <profiles>
-  	<profile>
-  			<!-- 
-  				Perfil principal 
-  				Genera el paquete entregable para la publicacion de los microservicios
-  			 -->
-  			<id>service</id>
-  			<activation>
-  				<activeByDefault>true</activeByDefault>
-  			</activation>
+		<cognito.access>${env.COGNITO_ACCESS}</cognito.access>
+		<cognito.secret>${env.COGNITO_SECRET}</cognito.secret>
+
+		<database.access>${env.DATABASE_ACCESS}</database.access>
+		<database.secret>${env.DATABASE_SECRET}</database.secret>
+
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<application.env>cloud</application.env>
 				<validate.enabled>false</validate.enabled>
 			</properties>
-  	</profile>
-  	
-  	<profile>
-  		<id>local</id>
- 			<properties>
+		</profile>
+
+		<profile>
+			<id>local</id>
+			<properties>
 				<application.env>local</application.env>
 				<validate.enabled>true</validate.enabled>
 			</properties>
-  	</profile>
-  </profiles>
+		</profile>
+	</profiles>
 
-  <repositories>
-    <repository>
-      <id>jcenter.bintray.com</id>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
-    <repository>
-	  <id>github</id>
-	  <url>https://maven.pkg.github.com/intrale/repo</url>
-	</repository>
-  </repositories>
-  <distributionManagement>
-	<repository>
-	  <id>github</id>
-	  <name>GitHub llarreta Apache Maven Packages</name>
-	  <url>https://maven.pkg.github.com/intrale/repo</url>
-	</repository>
-  </distributionManagement>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 
-  <build>
-    <finalName>${project.artifactId}</finalName>
+		<plugins>
 
-			    <plugins>
-			    
-			    <!-- Compilacion -->
-			      <plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-compiler-plugin</artifactId>
-			        <configuration>
-			        
-			          <annotationProcessorPaths>
-			            <path>
-			              <groupId>io.micronaut</groupId>
-			              <artifactId>micronaut-inject-java</artifactId>
-			              <version>${micronaut.version}</version>
-			            </path>
-			            <path>
-			              <groupId>io.micronaut</groupId>
-			              <artifactId>micronaut-validation</artifactId>
-			              <version>${micronaut.version}</version>
-			            </path>
-			            <path>
-			                <groupId>org.mapstruct</groupId>
-			                <artifactId>mapstruct-processor</artifactId>
-			                <version>${org.mapstruct.version}</version>
-			            </path>            
-			          </annotationProcessorPaths>
-			          
-			          <compilerArgs>
-			            <arg>-Amicronaut.processing.group=ar.com.intrale</arg>
-			            <arg>-Amicronaut.processing.module=IntraleFunction</arg>
-			          </compilerArgs>
-			          
-			        </configuration>
-			        <executions>
-			          <execution>
-			            <id>test-compile</id>
-			            <goals>
-			              <goal>testCompile</goal>
-			            </goals>
-			            <configuration>
-			
-			              <annotationProcessorPaths>
-			                <path>
-			                  <groupId>io.micronaut</groupId>
-			                  <artifactId>micronaut-inject-java</artifactId>
-			                  <version>${micronaut.version}</version>
-			                </path>
-			                <path>
-			                  <groupId>io.micronaut</groupId>
-			                  <artifactId>micronaut-validation</artifactId>
-			                  <version>${micronaut.version}</version>
-			                </path>
-				            <path>
-				                <groupId>org.mapstruct</groupId>
-				                <artifactId>mapstruct-processor</artifactId>
-				                <version>${org.mapstruct.version}</version>
-				            </path>                        
-			              </annotationProcessorPaths>
-			            </configuration>
-			          </execution>
-			        </executions>
-			      </plugin>
-			      
-			      <!-- Covertura de pruebas -->
-		            <plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>${jacoco-maven-plugin.version}</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>jacoco-report</id>
-								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-							<!-- Add this checking -->
-							<execution>
-								<id>jacoco-check</id>
-								<goals>
-									<goal>check</goal>
-								</goals>
-								<configuration>
-								
-								<excludes>
-									<exclude>**/mappers/**</exclude>
-								</excludes>
-								<rules>
-								  <rule>
-								    <element>PACKAGE</element>
-								    <excludes>
-								      <exclude>*Test</exclude>
-								    </excludes>
-								    <limits>
-								      <limit>
-								        <counter>LINE</counter>
-								        <value>COVEREDRATIO</value>
-								        <minimum>${test-covered-ratio}</minimum>
-								      </limit>
-								    </limits>
-								  </rule>
-								</rules>
-								
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				  <!-- Ejecucion de pruebas -->
-			      <plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-surefire-plugin</artifactId>
-			        <version>${maven-surefire-plugin.version}</version>
-			        <configuration>
-			          <detail>true</detail>
-			          <trimStackTrace>false</trimStackTrace>
-			          <includes>
-			            <include>%regex[.*]</include>
-			          </includes>
-			        </configuration>
-			      </plugin>
-			      <plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-failsafe-plugin</artifactId>
-			        <version>${maven-failsafe-plugin.version}</version>
-			        <executions>
-			          <execution>
-			            <goals>
-			              <goal>integration-test</goal>
-			              <goal>verify</goal>
-			            </goals>
-			          </execution>
-			        </executions>
-			        
-			      </plugin>
-		            <plugin>
-				        <groupId>io.micronaut.build</groupId>
-				        <artifactId>micronaut-maven-plugin</artifactId>
-				      </plugin>
-				      <plugin>
-				        <groupId>org.apache.maven.plugins</groupId>
-				        <artifactId>maven-shade-plugin</artifactId>
-				      </plugin>
-			    </plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
 
-  </build>
-  
-  <dependencies>
-  	<dependency>
-		<groupId>ar.com.intrale</groupId>
-		<artifactId>users-core</artifactId>
-		<version>USERS_VERSION</version>
-  	</dependency>
-	<dependency>
-		<groupId>com.amazonaws</groupId>
-		<artifactId>aws-java-sdk-cognitoidp</artifactId>
-		<version>${aws-java-sdk.version}</version>
-	</dependency>  	
-  </dependencies>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>io.micronaut</groupId>
+							<artifactId>micronaut-inject-java</artifactId>
+							<version>${micronaut.version}</version>
+						</path>
+						<path>
+							<groupId>io.micronaut</groupId>
+							<artifactId>micronaut-validation</artifactId>
+							<version>${micronaut.version}</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+
+					<compilerArgs>
+						<arg>-Amicronaut.processing.group=${function.package}}</arg>
+						<arg>-Amicronaut.processing.module=${function.name}</arg>
+					</compilerArgs>
+
+				</configuration>
+				<executions>
+					<execution>
+						<id>test-compile</id>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+
+							<annotationProcessorPaths>
+								<path>
+									<groupId>io.micronaut</groupId>
+									<artifactId>micronaut-inject-java</artifactId>
+									<version>${micronaut.version}</version>
+								</path>
+								<path>
+									<groupId>io.micronaut</groupId>
+									<artifactId>micronaut-validation</artifactId>
+									<version>${micronaut.version}</version>
+								</path>
+								<path>
+									<groupId>org.mapstruct</groupId>
+									<artifactId>mapstruct-processor</artifactId>
+									<version>${org.mapstruct.version}</version>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+
+							<excludes>
+								<exclude>**/mappers/**</exclude>
+							</excludes>
+							<rules>
+								<rule>
+									<element>PACKAGE</element>
+									<excludes>
+										<exclude>*Test</exclude>
+									</excludes>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>${test-covered-ratio}</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<detail>true</detail>
+					<trimStackTrace>false</trimStackTrace>
+					<includes>
+						<include>%regex[.*]</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven-failsafe-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>io.micronaut.build</groupId>
+				<artifactId>micronaut-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+			</plugin>
+		</plugins>
+
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>ar.com.intrale</groupId>
+			<artifactId>users-core</artifactId>
+			<version>USERS_VERSION</version>
+		</dependency>
+		<dependency>
+			<groupId>ar.com.intrale</groupId>
+			<artifactId>commons</artifactId>
+			<version>COMMONS_VERSION</version>
+		</dependency>
+		<dependency>
+			<groupId>ar.com.intrale</groupId>
+			<artifactId>test</artifactId>
+			<version>TEST_VERSION</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-cognitoidp</artifactId>
+			<version>${aws-java-sdk.version}</version>
+		</dependency>
+	</dependencies>
+
+
+	<repositories>
+		<repository>
+			<id>jcenter.bintray.com</id>
+			<url>https://jcenter.bintray.com</url>
+		</repository>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/intrale/repo</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub llarreta Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/intrale/repo</url>
+		</repository>
+	</distributionManagement>
 
 </project>
