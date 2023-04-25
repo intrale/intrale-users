@@ -25,4 +25,11 @@ public class SignUpRequest extends RequestRoot{
 		this.email = email;
 	}
 
+
+	@NonNull
+	@NotBlank
+	@Override
+	public String getBusinessName() {
+		return super.getBusinessName();
+	}
 }

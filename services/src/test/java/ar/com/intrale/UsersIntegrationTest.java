@@ -77,7 +77,7 @@ public class UsersIntegrationTest extends ar.com.intrale.Test{
 		Map<String, String> headers = requestEvent.getHeaders();
 		headers.remove(FunctionBuilder.HEADER_BUSINESS_NAME);
 		responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);
-		assertEquals(HttpStatus.NOT_FOUND.getCode(), responseEvent.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST.getCode(), responseEvent.getStatusCode());
 		
 		requestEvent = makeRequestEvent(signUpRequest, SignUpFunction.FUNCTION_NAME);
     	responseEvent = (APIGatewayProxyResponseEvent) lambda.execute(requestEvent);

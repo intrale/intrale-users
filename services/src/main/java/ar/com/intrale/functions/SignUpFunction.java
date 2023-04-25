@@ -1,5 +1,6 @@
 package ar.com.intrale.functions;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import ar.com.intrale.exceptions.UserExistsException;
 import ar.com.intrale.messages.SignUpRequest;
 import ar.com.intrale.messages.SignUpResponse;
 import ar.com.intrale.messages.builders.StringToSignUpRequestBuilder;
+import com.nimbusds.jwt.JWTClaimsSet;
 import io.micronaut.context.annotation.Requires;
 
 @Singleton
@@ -46,7 +48,12 @@ public class SignUpFunction extends
 	
 	@Inject
 	private CredentialsGenerator credentialGenerator;
-	
+
+	@Override
+	protected List getGroups(JWTClaimsSet claimsSet) {
+		return super.getGroups(claimsSet);
+	}
+
 	@Override
 	public SignUpResponse execute(SignUpRequest request) throws FunctionException {
 		SignUpResponse response = new SignUpResponse(); 
