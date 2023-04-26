@@ -125,6 +125,7 @@ jobs:
           sed -i "s/USERS_VERSION/${VERSION_TARGET}/gi" ./client/pom.xml
           sed -i "s/CORE_VERSION/${CORE_VERSION}/gi" ./client/pom.xml
           sed -i "s/COMMONS_VERSION/${COMMONS_VERSION}/gi" ./client/pom.xml
+          sed -i "s/TEST_VERSION/${TEST_VERSION}/gi" ./client/pom.xml
           cd client
           mvn clean compile package install
           mvn -e -X deploy         
